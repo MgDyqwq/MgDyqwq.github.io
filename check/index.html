@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户激活 | 大明王朝</title>
+    <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 明朝宫廷字体与底色 */
+        body {
+            background: #FDF6E9;
+            font-family: "宋体", "SimSun", serif;
+            background-image: radial-gradient(#E9D5A0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* 皇家边框纹理 */
+        .ming-border {
+            border-image: linear-gradient(45deg, #D4AF37, #F3E496, #D4AF37) 1;
+        }
+
+        /* 按钮按压效果 */
+        .ming-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- 明朝皇家卷轴风格卡片 -->
+    <div class="w-full max-w-md bg-gradient-to-b from #FFF8E6 to #FAF3E0 rounded-2xl shadow-xl border-4 border-[#D4AF37] p-8 relative overflow-hidden">
+        
+        <!-- 顶部龙纹装饰 -->
+        <div class="w-20 h-5 mx-auto mb-4 bg-[#A62424] rounded-full opacity-80"></div>
+
+        <!-- 标题 -->
+        <h2 class="text-3xl text-center text-[#A62424] font-bold tracking-widest mb-8 drop-shadow-md">
+            大明账户激活
+        </h2>
+
+        <!-- 输入框 -->
+        <input id="username" placeholder="请输入注册用户名" 
+            class="w-full border-2 border-[#D4AF37] bg-white/90 rounded-lg p-3.5 mb-5 outline-none focus:border-[#A62424] focus:ring-2 focus:ring-[#F3E496] transition-all text-lg">
+            
+        <input id="code" placeholder="请输入6位激活码" maxlength="6"
+            class="w-full border-2 border-[#D4AF37] bg-white/90 rounded-lg p-3.5 mb-5 outline-none focus:border-[#A62424] focus:ring-2 focus:ring-[#F3E496] transition-all text-lg">
+        
+        <!-- 激活按钮 -->
+        <button onclick="doActive()" 
+            class="w-full bg-[#A62424] hover:bg-[#8C1C1C] text-white py-4 rounded-lg font-bold text-lg shadow-md transition-all ming-btn mb-4">
+            立 即 激 活
+        </button>
+
+        <!-- 重发激活码 -->
+        <button id="resendBtn" onclick="resendCode()" 
+            class="w-full bg-[#6B4423] hover:bg-[#5A391D] text-white py-4 rounded-lg font-bold text-lg shadow-md transition-all ming-btn">
+            重 发 激 活 码
+        </button>
+
+        <!-- 提示信息 -->
+        <div id="msg" class="mt-6 text-center text-[#A62424] font-bold text-lg min-h-6"></div>
+
+        <!-- 底部宫廷装饰 -->
+        <div class="w-full h-3 bg-gradient-to-r from-[#D4AF37] via-[#F3E496] to-[#D4AF37] mt-8 rounded-full"></div>
+    </div>
+
+<script>
+// 跨域Cookie兼容
+const CookieUtil = {
+    set(name, value, days = 30) {
+        let d = new Date();
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/;SameSite=None;Secure`;
+    },
+    get(name) {
+        let arr = document.cookie.match(new RegExp("(^| )" + name + "=([^;]*)(;|$)"));
+        return arr ? decodeURIComponent(arr[2]) : null;
+    }
+};
+
+// 全局倒计时
+let waitTime = 0;
+
+// 激活账号
+function doActive(){
+    let uname = document.getElementById('username').value.trim();
+    let code = document.getElementById('code').value.trim();
+    let msg = document.getElementById('msg');
+
+    if(!uname || !code){
+        msg.innerText = '请填写用户名和激活码';
+        return;
+    }
+    let userStr = CookieUtil.get('user_'+uname);
+    if(!userStr){
+        msg.innerText = '该用户未注册';
+        return;
+    }
+    let user = JSON.parse(userStr);
+    // 判断是否过期
+    if(Date.now() > user.expire){
+        msg.innerText = '激活码已过期，请重发';
+        return;
+    }
+    // 判断激活码
+    if(user.code !== code){
+        msg.innerText = '激活码错误';
+        return;
+    }
+    // 标记为已激活
+    user.active = 1;
+    CookieUtil.set('user_'+uname, JSON.stringify(user), 30);
+    msg.innerText = '激活成功！即将跳转登录页';
+    setTimeout(()=>{
+        window.location.href = 'https://mingdynasty1.github.io/sign/in.html';
+    },1500);
+}
+
+// 重发激活码 120秒冷却
+function resendCode(){
+    let uname = document.getElementById('username').value.trim();
+    let msg = document.getElementById('msg');
+    let btn = document.getElementById('resendBtn');
+
+    if(!uname){
+        msg.innerText = '请先输入用户名';
+        return;
+    }
+    let userStr = CookieUtil.get('user_'+uname);
+    if(!userStr){
+        msg.innerText = '该用户未注册';
+        return;
+    }
+    let user = JSON.parse(userStr);
+    let now = Date.now();
+
+    // 120秒冷却判断
+    if(now - user.lastResend < 120 * 1000){
+        let left = Math.ceil((120*1000 - (now - user.lastResend))/1000);
+        msg.innerText = `请等待${left}秒后再重发`;
+        return;
+    }
+
+    // 生成新激活码、重置10分钟有效期
+    let newCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.code = newCode;
+    user.expire = now + 10 * 60 * 1000;
+    user.lastResend = now;
+    CookieUtil.set('user_'+uname, JSON.stringify(user), 30);
+
+    msg.innerText = `已生成新激活码：${newCode}（10分钟有效）`;
+    waitTime = 120;
+    // 倒计时
+    let timer = setInterval(()=>{
+        waitTime--;
+        btn.innerText = `重发激活码(${waitTime}秒)`;
+        if(waitTime <= 0){
+            clearInterval(timer);
+            btn.innerText = '重 发 激 活 码';
+        }
+    },1000);
+}
+</script>
+</body>
+</html>
