@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>大明大运：三器镇国 | MingDynasty</title>
+  <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+   
+<style>
+/* 全局重置 */
+* {margin:0;padding:0;box-sizing:border-box;font-family:"PingFang SC","Microsoft YaHei",serif;}
+html,body {height:100%;overflow:hidden;transition:background 0.4s,color 0.4s;}
+
+/* 明朝主色调 */
+:root {
+  --bg:#fdf6e9;
+  --text:#2a1f0f;
+  --accent:#9d2929;
+  --border:#c49373;
+  --panel:rgba(255,253,245,0.9);
+  --shadow:0 4px 12px rgba(130,90,60,0.15);
+}
+.dark {
+  --bg:#1a1612;
+  --text:#e6d5bc;
+  --accent:#c45c5c;
+  --border:#7a5c48;
+  --panel:rgba(26,22,18,0.92);
+  --shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23c49373" fill-opacity="0.05" d="M0,0 L100,0 L100,100 L0,100 Z"/></svg>');
+  background-repeat:repeat;
+}
+
+/* 顶部标题栏 */
+.header {
+  position:fixed;top:0;left:0;right:0;height:56px;
+  background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;z-index:99;box-shadow:var(--shadow);
+}
+.header h1 {
+  font-size:18px;font-weight:500;color:var(--accent);
+  letter-spacing:1px;
+}
+.toolbar {display:flex;gap:10px;align-items:center;}
+.btn {
+  padding:6px 10px;border:1px solid var(--border);
+  background:transparent;color:var(--text);
+  border-radius:6px;cursor:pointer;font-size:14px;
+  transition:0.2s;
+}
+.btn:hover {background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* 阅读主容器 */
+.reader {
+  position:absolute;top:56px;bottom:70px;left:0;right:0;
+  padding:24px 20px;overflow-y:auto;line-height:1.8;
+  font-size:17px;max-width:800px;margin:0 auto;
+}
+.chapter-title {
+  font-size:22px;text-align:center;margin-bottom:24px;
+  color:var(--accent);font-weight:600;
+}
+.content {white-space:pre-wrap;}
+.content p {margin-bottom:1.2em;text-indent:2em;}
+
+/* 底部控制栏 */
+.footer {
+  position:fixed;bottom:0;left:0;right:0;height:70px;
+  background:var(--panel);border-top:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:0 16px;gap:6px;z-index:99;
+}
+.progress {width:100%;height:4px;appearance:none;}
+.progress::-webkit-slider-thumb {appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);}
+.foot-bar {display:flex;align-items:center;justify-content:space-between;width:100%;}
+.foot-btn {padding:8px 14px;font-size:15px;min-width:80px;}
+
+/* 音乐播放器 */
+.music {display:flex;align-items:center;gap:8px;}
+#playBtn {width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--accent);color:#fff;cursor:pointer;display:grid;place-items:center;}
+
+/* 目录抽屉 */
+.drawer {
+  position:fixed;top:0;left:-280px;bottom:0;width:280px;
+  background:var(--panel);border-right:1px solid var(--border);
+  padding:70px 16px 20px;overflow-y:auto;transition:left 0.3s;z-index:98;
+}
+.drawer.open {left:0;}
+.drawer h3 {margin-bottom:16px;color:var(--accent);}
+.dir-item {padding:10px 8px;border-bottom:1px dashed var(--border);cursor:pointer;font-size:15px;}
+.dir-item:hover {color:var(--accent);}
+
+/* 遮罩 */
+.mask {
+  position:fixed;inset:0;background:rgba(0,0,0,0.3);
+  opacity:0;pointer-events:none;transition:0.3s;z-index:97;
+}
+.mask.show {opacity:1;pointer-events:auto;}
+
+/* 滚动条美化 */
+.reader::-webkit-scrollbar {width:6px;}
+.reader::-webkit-scrollbar-thumb {background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- 顶部 -->
+<div class="header">
+  <h1>大明大运：三器镇国</h1>
+  <div class="toolbar">
+    <button class="btn" id="dirBtn">目录</button>
+    <button class="btn" id="fontBtn">字体A+</button>
+    <button class="btn" id="themeBtn">暗色</button>
+  </div>
+</div>
+
+<!-- 目录 -->
+<div class="drawer" id="drawer">
+  <h3>章节目录</h3>
+  <div id="dirList"></div>
+</div>
+<div class="mask" id="mask"></div>
+
+<!-- 阅读区 -->
+<div class="reader" id="reader">
+  <div class="chapter-title" id="chapterTitle">加载中...</div>
+  <div class="content" id="content">正在从服务器加载小说内容，请稍候...</div>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <input type="range" min="1" max="1" class="progress" id="progress">
+  <div class="foot-bar">
+    <button class="btn foot-btn" id="prevBtn">上一章</button>
+    <div class="music">
+      <button id="playBtn">▶</button>
+      <span>背景音乐</span>
+    </div>
+    <button class="btn foot-btn" id="nextBtn">下一章</button>
+  </div>
+</div>
+
+<audio id="audio" loop src="https://mingdnasty1.github.io/main.mp3">
+
+<script>
+// 配置
+const novelUrl = "https://mgdyqwq.github.io/novel.html";
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("playBtn");
+let isPlay = false;
+
+playBtn.onclick = () => {
+  if(isPlay){audio.pause();playBtn.textContent="▶";}
+  else{audio.play();playBtn.textContent="⏸";}
+  isPlay = !isPlay;
+};
+
+// 明暗切换
+const themeBtn = document.getElementById("themeBtn");
+themeBtn.onclick = () => {
+  document.body.classList.toggle("dark");
+  themeBtn.textContent = document.body.classList.contains("dark") ? "明色" : "暗色";
+};
+
+// 字体缩放
+let fontSize = 17;
+const fontBtn = document.getElementById("fontBtn");
+const content = document.getElementById("content");
+fontBtn.onclick = () => {
+  fontSize = fontSize >= 21 ? 15 : fontSize + 1;
+  content.style.fontSize = fontSize + "px";
+};
+
+// 目录抽屉
+const dirBtn = document.getElementById("dirBtn");
+const drawer = document.getElementById("drawer");
+const mask = document.getElementById("mask");
+dirBtn.onclick = () => {drawer.classList.add("open");mask.classList.add("show");};
+mask.onclick = () => {drawer.classList.remove("open");mask.classList.remove("show");};
+
+// 跨域抓取小说（兼容CORS）
+let fullText = "";
+let chapters = [];
+let current = 0;
+
+async function loadNovel(){
+  try{
+    const res = await fetch(novelUrl);
+    const html = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html,"text/html");
+    fullText = doc.body.textContent || "";
+    parseChapters();
+    showChapter(0);
+  }catch(e){
+    document.getElementById("content").innerText = "加载失败：跨域限制或链接不可用\n\n你可将小说文本粘贴到此处即可正常阅读。";
+  }
+}
+
+// 按章节拆分（适配你的小说：第 X 章）
+function parseChapters(){
+  const arr = fullText.split(/(?=第\s*\d+\s*章)/g);
+  chapters = arr.filter(c=>c.trim().length>20);
+  document.getElementById("progress").max = chapters.length;
+  renderDir();
+}
+
+// 渲染目录
+function renderDir(){
+  const list = document.getElementById("dirList");
+  chapters.forEach((c,i)=>{
+    const title = c.match(/第\s*\d+\s*章[^：\n]*[：\n]/)?.[0]?.replace(/[：\n]/g,"") || `第${i+1}章`;
+    const div = document.createElement("div");
+    div.className = "dir-item";
+    div.innerText = title;
+    div.onclick = ()=>{showChapter(i);drawer.classList.remove("open");mask.classList.remove("show");};
+    list.appendChild(div);
+  });
+}
+
+// 显示章节
+function showChapter(index){
+  if(index<0 || index>=chapters.length)return;
+  current = index;
+  const c = chapters[index];
+  const title = c.match(/第\s*\d+\s*章[^：\n]*/)?.[0] || `第${index+1}章`;
+  document.getElementById("chapterTitle").innerText = title;
+  document.getElementById("content").innerText = c;
+  document.getElementById("progress").value = index+1;
+  document.getElementById("reader").scrollTop = 0;
+}
+
+// 翻页
+document.getElementById("prevBtn").onclick = ()=>showChapter(current-1);
+document.getElementById("nextBtn").onclick = ()=>showChapter(current+1);
+document.getElementById("progress").oninput = (e)=>showChapter(Number(e.target.value)-1);
+
+// 启动
+loadNovel();
+</script>
+</body>
+</html>
