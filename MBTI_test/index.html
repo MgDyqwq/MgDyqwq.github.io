@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大明风骨 · MBTI心性品鉴 | MingDynasty</title>
+  
+    <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+  <!-- 引入古风字体 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ========== 基础样式重置 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ========== 明朝主题变量定义 ========== */
+    :root {
+      --bg-primary: #faf6e9; /* 宣纸底色 */
+      --bg-secondary: #f5f0e1;
+      --text-primary: #2c1a14; /* 墨黑 */
+      --text-secondary: #5c4b42;
+      --accent-red: #9d2929; /* 朱砂红 */
+      --accent-blue: #1a557a; /* 青花蓝 */
+      --border-color: #d4b896; /* 原木色边框 */
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --pattern-bg: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4b896' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    /* 暗色模式（墨韵主题） */
+    .dark-mode {
+      --bg-primary: #1a1612;
+      --bg-secondary: #241f1b;
+      --text-primary: #e8e0d8;
+      --text-secondary: #c0b8b0;
+      --accent-red: #c73e3e;
+      --accent-blue: #3a7aa3;
+      --border-color: #5c4b42;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background-color: var(--bg-primary);
+      background-image: var(--pattern-bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: all 0.3s ease;
+      min-height: 100vh;
+    }
+
+    /* ========== 布局容器 ========== */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* ========== 头部样式 ========== */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-red);
+      margin-bottom: 0.5rem;
+      letter-spacing: 2px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .header h1::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: var(--accent-blue);
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* ========== 主题切换按钮 ========== */
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: transparent;
+      border: 2px solid var(--border-color);
+      color: var(--text-primary);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    /* ========== 卡片样式 ========== */
+    .card {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-blue));
+    }
+
+    /* ========== 题目样式 ========== */
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: none;
+    }
+
+    .question.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .option-btn {
+      background: transparent;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      text-align: left;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent-blue);
+      background: rgba(26, 85, 122, 0.1);
+      transform: translateX(4px);
+    }
+
+    .option-btn.selected {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+
+    /* ========== 进度条 ========== */
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: var(--border-color);
+      border-radius: 4px;
+      margin: 2rem 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent-red);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* ========== 按钮组 ========== */
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .nav-btn {
+      padding: 0.8rem 2rem;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1rem;
+      border: 2px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .nav-btn:not(:disabled):hover {
+      background: var(--accent-red);
+      color: white;
+      border-color: var(--accent-red);
+    }
+
+    /* ========== 结果弹窗 ========== */
+    .result-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .result-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .result-content {
+      background: var(--bg-secondary);
+      border: 3px solid var(--border-color);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 2.5rem;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .result-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .result-close:hover {
+      color: var(--accent-red);
+      background: rgba(157, 41, 41, 0.1);
+    }
+
+    .result-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--accent-red);
+      margin-bottom: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .result-type {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--accent-blue);
+      margin: 1rem 0;
+      letter-spacing: 4px;
+    }
+
+    .result-desc {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin: 1.5rem 0;
+      text-align: justify;
+    }
+
+    /* ========== 动画 ========== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== 响应式 ========== */
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      .card {
+        padding: 1.5rem;
+      }
+      .question {
+        font-size: 1.1rem;
+      }
+      .result-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <div class="header">
+      <h1>大明风骨 · MBTI心性品鉴</h1>
+      <p>探知秉性，品鉴风骨——源于大明哲思的人格测试</p>
+      <button class="theme-toggle" id="themeToggle" title="切换明暗">🌙</button>
+    </div>
+
+    <!-- 测试卡片 -->
+    <div class="card">
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <!-- 测试题目容器 -->
+      <div id="questionContainer">
+        <!-- 题目由JS动态生成 -->
+      </div>
+
+      <div class="btn-group">
+        <button class="nav-btn" id="prevBtn" disabled>上一题</button>
+        <button class="nav-btn" id="nextBtn">下一题</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果弹窗 -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <button class="result-close" id="closeResult">×</button>
+      <div class="result-title">你的大明风骨人格</div>
+      <div class="result-type" id="resultType"></div>
+      <div class="result-desc" id="resultDesc"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========== MBTI测试数据 ==========
+    const questions = [
+      { id: 1, text: "与人相聚时，你更倾向于主动畅谈，而非静听旁人", type: "E" },
+      { id: 2, text: "你更关注现实当下，而非空想未来图景", type: "S" },
+      { id: 3, text: "做决断时，你更看重逻辑事理，而非人情感受", type: "T" },
+      { id: 4, text: "你喜欢规划有序的生活，而非随性自在的状态", type: "J" },
+      { id: 5, text: "独处之后，你会感到精力充沛，而非孤寂无聊", type: "I" },
+      { id: 6, text: "你容易感知他人未言明的情绪，而非忽略细节", type: "N" },
+      { id: 7, text: "你更愿直言事实，而非顾及情面婉转表达", type: "T" },
+      { id: 8, text: "你习惯提前安排事务，而非临时应变", type: "J" },
+      { id: 9, text: "热闹的场合能让你充满活力，而非疲惫不堪", type: "E" },
+      { id: 10, text: "你注重实际经验，而非抽象灵感与想象", type: "S" },
+      { id: 11, text: "你认为公正比包容更重要，处事以理为先", type: "T" },
+      { id: 12, text: "你喜欢事情有明确结论，而非悬而未决", type: "J" },
+      { id: 13, text: "你更愿意深交少数知己，而非结识众多泛交", type: "I" },
+      { id: 14, text: "你常思考事物背后的意义与可能，而非表面现状", type: "N" },
+      { id: 15, text: "和谐的氛围比对错争执更重要，以和为贵", type: "F" },
+      { id: 16, text: "你享受随心而活的自由，不喜被计划束缚", type: "P" },
+      { id: 17, text: "遇到问题，你更愿与人倾诉商讨，而非独自思索", type: "E" },
+      { id: 18, text: "你相信眼见为实，而非虚无的灵感与预感", type: "S" },
+      { id: 19, text: "你常被艺术与意境打动，注重内心感受", type: "F" },
+      { id: 20, text: "你擅长随机应变，享受生活中的惊喜", type: "P" }
+    ];
+
+    // MBTI结果库（明朝风格解析）
+    const mbtiResults = {
+      "ISTJ": "【忠肃守礼君】沉稳务实，恪守本心，如大明文臣般严谨持重，行事有度，忠信可靠，是家国之柱石",
+      "ISFJ": "【仁厚温良士】温润谦和，心怀苍生，如古之贤士，待人以诚，默默守护周遭，以仁心处世",
+      "INFJ": "【明道静心者】心性通透，洞察世事，心怀大道，内敛而有风骨，坚守心中正道",
+      "INTJ": "【运筹经纬才】智计深远，谋定后动，有经天纬地之才，独立果敢，能成大事",
+      "ISTP": "【灵动巧思客】机敏灵动，擅解疑难，行事洒脱，不拘小节，藏巧思于内敛之中",
+      "ISFP": "【清雅风雅士】温润雅致，心怀诗意，追求本心，如文人墨客，自在洒脱",
+      "INFP": "【净心守道者】纯粹通透，坚守初心，心怀理想，不为世俗所扰，风骨凛然",
+      "INTP": "【穷理格物师】静心穷理，探求本源，思维深邃，如大儒般格物致知",
+      "ESTP": "【潇洒纵横客】爽朗通达，长袖善舞，处事圆融，能于世间自在纵横",
+      "ESFP": "【热忱明朗士】热情开朗，心怀暖阳，如暖阳普照，带给周遭生机与欢喜",
+      "ENFP": "【逸趣灵心者】灵动洒脱，才情四溢，心怀山海，自在如风，充满逸趣",
+      "ENTP": "【雄辩奇思才】思维敏捷，妙语连珠，喜探新思，有纵横捭阖之才",
+      "ESTJ": "【刚正执事官】刚正不阿，行事果决，掌事有序，如大明官吏，公正严明",
+      "ESFJ": "【和顺安邦人】谦和友善，体恤他人，善聚人心，以和为贵，安处世事",
+      "ENFJ": "【明德教化君】温润而有风骨，善引他人向善，心怀天下，德化四方",
+      "ENTJ": "【君临天下者】果敢坚毅，统领四方，有帝王之胸襟与气魄，能担大任"
+    };
+
+    // ========== 全局变量 ==========
+    let currentQuestion = 0;
+    let answers = {};
+    const questionContainer = document.getElementById('questionContainer');
+    const progressBar = document.getElementById('progressBar');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const themeToggle = document.getElementById('themeToggle');
+    const resultModal = document.getElementById('resultModal');
+    const closeResult = document.getElementById('closeResult');
+
+    // ========== 初始化页面 ==========
+    function init() {
+      renderQuestions();
+      showQuestion(currentQuestion);
+      setupTheme();
+    }
+
+    // 渲染所有题目
+    function renderQuestions() {
+      questions.forEach((q, index) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.dataset.index = index;
+        
+        qDiv.innerHTML = `
+          <p>${index + 1}. ${q.text}</p>
+          <div class="options">
+            <button class="option-btn" data-type="${q.type}">完全符合</button>
+            <button class="option-btn" data-type="${q.type}">比较符合</button>
+          </div>
+        `;
+        questionContainer.appendChild(qDiv);
+      });
+
+      // 绑定选项点击事件
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', selectOption);
+      });
+    }
+
+    // 显示当前题目
+    function showQuestion(index) {
+      document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+      document.querySelector(`.question[data-index="${index}"]`).classList.add('active');
+      
+      // 更新进度
+      const progress = ((index + 1) / questions.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // 按钮状态
+      prevBtn.disabled = index === 0;
+      nextBtn.textContent = index === questions.length - 1 ? '查看结果' : '下一题';
+      
+      // 恢复已选答案
+      const selected = answers[index];
+      if (selected) {
+        const currentQ = document.querySelector(`.question[data-index="${index}"]`);
+        currentQ.querySelectorAll('.option-btn').forEach(btn => {
+          btn.classList.remove('selected');
+          if (btn.textContent === selected.text) {
+            btn.classList.add('selected');
+          }
+        });
+      }
+    }
+
+    // 选择选项
+    function selectOption(e) {
+      const parent = e.target.closest('.question');
+      const index = parseInt(parent.dataset.index);
+      const type = e.target.dataset.type;
+      const text = e.target.textContent;
+      
+      // 保存答案
+      answers[index] = { type, text };
+      
+      // 样式更新
+      parent.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+      e.target.classList.add('selected');
+    }
+
+    // 计算MBTI结果
+    function calculateResult() {
+      const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+      
+      Object.values(answers).forEach(ans => {
+        counts[ans.type]++;
+      });
+      
+      // 生成类型
+      const type = [
+        counts.E >= counts.I ? 'E' : 'I',
+        counts.S >= counts.N ? 'S' : 'N',
+        counts.T >= counts.F ? 'T' : 'F',
+        counts.J >= counts.P ? 'J' : 'P'
+      ].join('');
+      
+      return type;
+    }
+
+    // 显示结果
+    function showResult() {
+      const type = calculateResult();
+      document.getElementById('resultType').textContent = type;
+      document.getElementById('resultDesc').textContent = mbtiResults[type] || "秉性独特，自有风骨";
+      resultModal.classList.add('show');
+    }
+
+    // 主题切换
+    function setupTheme() {
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️';
+      }
+      
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const dark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', dark);
+        themeToggle.textContent = dark ? '☀️' : '🌙';
+      });
+    }
+
+    // ========== 按钮事件 ==========
+    nextBtn.addEventListener('click', () => {
+      // 检查是否已选
+      if (!answers[currentQuestion]) {
+        alert('请选择一项答案');
+        return;
+      }
+      
+      if (currentQuestion === questions.length - 1) {
+        showResult();
+      } else {
+        currentQuestion++;
+        showQuestion(currentQuestion);
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        showQuestion(currentQuestion);
+      }
+    });
+
+    closeResult.addEventListener('click', () => {
+      resultModal.classList.remove('show');
+    });
+
+    // 初始化
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
