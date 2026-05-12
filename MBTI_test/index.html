@@ -4,34 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>大明风骨 · MBTI心性品鉴 | MingDynasty</title>
-  
-    <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
-  <!-- 引入古风字体 -->
+   <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://以及fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* ========== 基础样式重置 ========== */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* ========== 明朝主题变量定义 ========== */
     :root {
-      --bg-primary: #faf6e9; /* 宣纸底色 */
+      --bg-primary: #faf6e9;
       --bg-secondary: #f5f0e1;
-      --text-primary: #2c1a14; /* 墨黑 */
+      --text-primary: #2c1a14;
       --text-secondary: #5c4b42;
-      --accent-red: #9d2929; /* 朱砂红 */
-      --accent-blue: #1a557a; /* 青花蓝 */
-      --border-color: #d4b896; /* 原木色边框 */
+      --accent-red: #9d2929;
+      --accent-blue: #1a557a;
+      --border-color: #d4b896;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --pattern-bg: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4b896' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+      --pattern-bg: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm632 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d4b896' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
     }
 
-    /* 暗色模式（墨韵主题） */
     .dark-mode {
       --bg-primary: #1a1612;
       --bg-secondary: #241f1b;
@@ -53,14 +49,12 @@
       min-height: 100vh;
     }
 
-    /* ========== 布局容器 ========== */
     .container {
       max-width: 800px;
       margin: 0 auto;
       padding: 2rem 1rem;
     }
 
-    /* ========== 头部样式 ========== */
     .header {
       text-align: center;
       margin-bottom: 2.5rem;
@@ -92,7 +86,6 @@
       margin-top: 1rem;
     }
 
-    /* ========== 主题切换按钮 ========== */
     .theme-toggle {
       position: absolute;
       top: 0;
@@ -117,7 +110,6 @@
       border-color: var(--accent-red);
     }
 
-    /* ========== 卡片样式 ========== */
     .card {
       background: var(--bg-secondary);
       border: 2px solid var(--border-color);
@@ -139,9 +131,8 @@
       background: linear-gradient(90deg, var(--accent-red), var(--accent-blue));
     }
 
-    /* ========== 题目样式 ========== */
     .question {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       margin-bottom: 1.5rem;
       font-weight: 500;
       display: none;
@@ -155,21 +146,20 @@
     .options {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.8rem;
     }
 
     .option-btn {
       background: transparent;
       border: 2px solid var(--border-color);
       border-radius: 6px;
-      padding: 1rem 1.2rem;
+      padding: 0.9rem 1.2rem;
       text-align: left;
       font-family: 'Noto Serif SC', serif;
       font-size: 1rem;
       color: var(--text-primary);
       cursor: pointer;
       transition: all 0.2s ease;
-      position: relative;
     }
 
     .option-btn:hover {
@@ -184,7 +174,6 @@
       border-color: var(--accent-blue);
     }
 
-    /* ========== 进度条 ========== */
     .progress-container {
       width: 100%;
       height: 8px;
@@ -201,7 +190,6 @@
       transition: width 0.3s ease;
     }
 
-    /* ========== 按钮组 ========== */
     .btn-group {
       display: flex;
       justify-content: space-between;
@@ -231,7 +219,6 @@
       border-color: var(--accent-red);
     }
 
-    /* ========== 结果弹窗 ========== */
     .result-modal {
       position: fixed;
       top: 0;
@@ -257,11 +244,11 @@
       background: var(--bg-secondary);
       border: 3px solid var(--border-color);
       border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
+      width: 92%;
+      max-width: 650px;
+      max-height: 85vh;
       overflow-y: auto;
-      padding: 2.5rem;
+      padding: 2rem;
       position: relative;
       box-shadow: var(--shadow);
     }
@@ -277,9 +264,6 @@
       cursor: pointer;
       width: 36px;
       height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border-radius: 50%;
     }
 
@@ -292,7 +276,7 @@
       text-align: center;
       font-size: 1.8rem;
       color: var(--accent-red);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       letter-spacing: 1px;
     }
 
@@ -301,60 +285,85 @@
       font-size: 2.5rem;
       font-weight: bold;
       color: var(--accent-blue);
-      margin: 1rem 0;
+      margin: 1rem 0 1.5rem;
       letter-spacing: 4px;
+    }
+
+    /* 四大维度样式 */
+    .dimension-wrap {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+
+    .dimension-item {
+      margin: 1rem 0;
+    }
+
+    .dimension-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .dim-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: var(--border-color);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dim-bar-left {
+      height: 100%;
+      background: var(--accent-blue);
+      width: 50%;
+    }
+
+    .dim-bar-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      background: var(--accent-red);
+      width: 50%;
     }
 
     .result-desc {
       color: var(--text-secondary);
       line-height: 1.8;
-      margin: 1.5rem 0;
+      margin-top: 1.5rem;
       text-align: justify;
     }
 
-    /* ========== 动画 ========== */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ========== 响应式 ========== */
     @media (max-width: 600px) {
-      .header h1 {
-        font-size: 1.8rem;
-      }
-      .card {
-        padding: 1.5rem;
-      }
-      .question {
-        font-size: 1.1rem;
-      }
-      .result-content {
-        padding: 1.5rem;
-      }
+      .header h1 { font-size: 1.8rem; }
+      .card { padding: 1.5rem; }
+      .result-content { padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 头部 -->
     <div class="header">
       <h1>大明风骨 · MBTI心性品鉴</h1>
-      <p>探知秉性，品鉴风骨——源于大明哲思的人格测试</p>
+      <p>探知秉性，品鉴风骨——明代哲思人格测试</p>
       <button class="theme-toggle" id="themeToggle" title="切换明暗">🌙</button>
     </div>
 
-    <!-- 测试卡片 -->
     <div class="card">
       <div class="progress-container">
         <div class="progress-bar" id="progressBar"></div>
       </div>
-
-      <!-- 测试题目容器 -->
-      <div id="questionContainer">
-        <!-- 题目由JS动态生成 -->
-      </div>
-
+      <div id="questionContainer"></div>
       <div class="btn-group">
         <button class="nav-btn" id="prevBtn" disabled>上一题</button>
         <button class="nav-btn" id="nextBtn">下一题</button>
@@ -362,62 +371,109 @@
     </div>
   </div>
 
-  <!-- 结果弹窗 -->
   <div class="result-modal" id="resultModal">
     <div class="result-content">
       <button class="result-close" id="closeResult">×</button>
       <div class="result-title">你的大明风骨人格</div>
       <div class="result-type" id="resultType"></div>
+
+      <!-- 四大维度分析区域 -->
+      <div class="dimension-wrap" id="dimensionWrap">
+        <div class="dimension-item">
+          <div class="dimension-label">
+            <span>外向 E</span>
+            <span>内向 I</span>
+          </div>
+          <div class="dim-bar-bg">
+            <div class="dim-bar-left" id="barEI"></div>
+            <div class="dim-bar-right" id="barEI2"></div>
+          </div>
+        </div>
+        <div class="dimension-item">
+          <div class="dimension-label">
+            <span>实感 S</span>
+            <span>直觉 N</span>
+          </div>
+          <div class="dim-bar-bg">
+            <div class="dim-bar-left" id="barSN"></div>
+            <div class="dim-bar-right" id="barSN2"></div>
+          </div>
+        </div>
+        <div class="dimension-item">
+          <div class="dimension-label">
+            <span>思考 T</span>
+            <span>情感 F</span>
+          </div>
+          <div class="dim-bar-bg">
+            <div class="dim-bar-left" id="barTF"></div>
+            <div class="dim-bar-right" id="barTF2"></div>
+          </div>
+        </div>
+        <div class="dimension-item">
+          <div class="dimension-label">
+            <span>判断 J</span>
+            <span>感知 P</span>
+          </div>
+          <div class="dim-bar-bg">
+            <div class="dim-bar-left" id="barJP"></div>
+            <div class="dim-bar-right" id="barJP2"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="result-desc" id="resultDesc"></div>
     </div>
   </div>
 
   <script>
-    // ========== MBTI测试数据 ==========
+    // 真实MBTI题库 24题
     const questions = [
-      { id: 1, text: "与人相聚时，你更倾向于主动畅谈，而非静听旁人", type: "E" },
-      { id: 2, text: "你更关注现实当下，而非空想未来图景", type: "S" },
-      { id: 3, text: "做决断时，你更看重逻辑事理，而非人情感受", type: "T" },
-      { id: 4, text: "你喜欢规划有序的生活，而非随性自在的状态", type: "J" },
-      { id: 5, text: "独处之后，你会感到精力充沛，而非孤寂无聊", type: "I" },
-      { id: 6, text: "你容易感知他人未言明的情绪，而非忽略细节", type: "N" },
-      { id: 7, text: "你更愿直言事实，而非顾及情面婉转表达", type: "T" },
-      { id: 8, text: "你习惯提前安排事务，而非临时应变", type: "J" },
-      { id: 9, text: "热闹的场合能让你充满活力，而非疲惫不堪", type: "E" },
-      { id: 10, text: "你注重实际经验，而非抽象灵感与想象", type: "S" },
-      { id: 11, text: "你认为公正比包容更重要，处事以理为先", type: "T" },
-      { id: 12, text: "你喜欢事情有明确结论，而非悬而未决", type: "J" },
-      { id: 13, text: "你更愿意深交少数知己，而非结识众多泛交", type: "I" },
-      { id: 14, text: "你常思考事物背后的意义与可能，而非表面现状", type: "N" },
-      { id: 15, text: "和谐的氛围比对错争执更重要，以和为贵", type: "F" },
-      { id: 16, text: "你享受随心而活的自由，不喜被计划束缚", type: "P" },
-      { id: 17, text: "遇到问题，你更愿与人倾诉商讨，而非独自思索", type: "E" },
-      { id: 18, text: "你相信眼见为实，而非虚无的灵感与预感", type: "S" },
-      { id: 19, text: "你常被艺术与意境打动，注重内心感受", type: "F" },
-      { id: 20, text: "你擅长随机应变，享受生活中的惊喜", type: "P" }
+      {id:1,text:"更喜欢与人社交聚会，而非独自静养",type:"E"},
+      {id:2,text:"更注重现实细节，而非未来想象",type:"S"},
+      {id:3,text:"做决定优先理性逻辑，而非情绪感受",type:"T"},
+      {id:4,text:"喜欢提前规划安排，不喜欢临时随性",type:"J"},
+      {id:5,text:"独处能恢复精力，热闹场合易疲惫",type:"I"},
+      {id:6,text:"擅长联想寓意与潜在可能，不只看表面",type:"N"},
+      {id:7,text:"待人处事优先顾及人情和谐",type:"F"},
+      {id:8,text:"喜欢灵活随性，不被计划束缚",type:"P"},
+      {id:9,text:"愿意主动结识新朋友，乐于表达自我",type:"E"},
+      {id:10,text:"相信经验事实，不太依赖灵感预感",type:"S"},
+      {id:11,text:"评价事物看重公平对错，不讲情面",type:"T"},
+      {id:12,text:"习惯把事情尽快定案收尾",type:"J"},
+      {id:13,text:"不喜过多应酬，偏爱少数深交知己",type:"I"},
+      {id:14,text:"喜欢思考抽象理念、人生大道",type:"N"},
+      {id:15,text:"容易共情他人，心软顾及他人感受",type:"F"},
+      {id:16,text:"习惯边走边看，享受随机变化",type:"P"},
+      {id:17,text:"遇到心事习惯找人倾诉沟通",type:"E"},
+      {id:18,text:"做事脚踏实地，不喜空想空谈",type:"S"},
+      {id:19,text:"争论时宁愿退让，不愿破坏和气",type:"F"},
+      {id:20,text:"生活作息规整，不喜杂乱无序",type:"J"},
+      {id:21,text:"更愿意安静旁观，不爱成为焦点",type:"I"},
+      {id:22,text:"好奇新事物、新思路，乐于突破常规",type:"N"},
+      {id:23,text:"讲道理多于讲感情，对事不对人",type:"T"},
+      {id:24,text:"讨厌被条条框框约束，向往自由",type:"P"}
     ];
 
-    // MBTI结果库（明朝风格解析）
+    // 明朝风格MBTI解析
     const mbtiResults = {
-      "ISTJ": "【忠肃守礼君】沉稳务实，恪守本心，如大明文臣般严谨持重，行事有度，忠信可靠，是家国之柱石",
-      "ISFJ": "【仁厚温良士】温润谦和，心怀苍生，如古之贤士，待人以诚，默默守护周遭，以仁心处世",
-      "INFJ": "【明道静心者】心性通透，洞察世事，心怀大道，内敛而有风骨，坚守心中正道",
-      "INTJ": "【运筹经纬才】智计深远，谋定后动，有经天纬地之才，独立果敢，能成大事",
-      "ISTP": "【灵动巧思客】机敏灵动，擅解疑难，行事洒脱，不拘小节，藏巧思于内敛之中",
-      "ISFP": "【清雅风雅士】温润雅致，心怀诗意，追求本心，如文人墨客，自在洒脱",
-      "INFP": "【净心守道者】纯粹通透，坚守初心，心怀理想，不为世俗所扰，风骨凛然",
-      "INTP": "【穷理格物师】静心穷理，探求本源，思维深邃，如大儒般格物致知",
-      "ESTP": "【潇洒纵横客】爽朗通达，长袖善舞，处事圆融，能于世间自在纵横",
-      "ESFP": "【热忱明朗士】热情开朗，心怀暖阳，如暖阳普照，带给周遭生机与欢喜",
-      "ENFP": "【逸趣灵心者】灵动洒脱，才情四溢，心怀山海，自在如风，充满逸趣",
-      "ENTP": "【雄辩奇思才】思维敏捷，妙语连珠，喜探新思，有纵横捭阖之才",
-      "ESTJ": "【刚正执事官】刚正不阿，行事果决，掌事有序，如大明官吏，公正严明",
-      "ESFJ": "【和顺安邦人】谦和友善，体恤他人，善聚人心，以和为贵，安处世事",
-      "ENFJ": "【明德教化君】温润而有风骨，善引他人向善，心怀天下，德化四方",
-      "ENTJ": "【君临天下者】果敢坚毅，统领四方，有帝王之胸襟与气魄，能担大任"
+      "ISTJ":"【忠肃守礼君】沉稳务实，恪守礼法，行事严谨有度，忠信可靠，如大明循吏，稳重自持。",
+      "ISFJ":"【仁厚温良士】温润谦和，体恤旁人，内敛善良，默默守护周遭，有君子仁心。",
+      "INFJ":"【明道静心者】心性通透，洞察世事，心怀正道，内敛有风骨，守本心而不随俗。",
+      "INTJ":"【运筹经纬才】智计深远，谋定后动，独立有格局，善观大势，具经世之才。",
+      "ISTP":"【灵动巧思客】机敏洒脱，擅解疑难，行事低调不拘小节，藏一身巧思。",
+      "ISFP":"【清雅风雅士】温润雅致，随心随性，喜诗意本心，如文人隐士自在清和。",
+      "INFP":"【净心守道者】纯粹赤诚，坚守理想，不为世俗折腰，风骨清逸。",
+      "INTP":"【穷理格物师】静心思辨，探求事理本源，思维深邃，如大儒格物致知。",
+      "ESTP":"【潇洒纵横客】爽朗通达，应变极强，处世圆融，于人情世事自在周旋。",
+      "ESFP":"【热忱明朗士】性情开朗，待人热忱，自带暖意，善于烘托氛围。",
+      "ENFP":"【逸趣灵心者】灵动浪漫，才情洒脱，心怀山海，思绪自由不羁。",
+      "ENTP":"【雄辩奇思才】思维敏捷，善辩多思，喜探新论，有纵横捭阖之姿。",
+      "ESTJ":"【刚正执事官】刚正果决，处事条理分明，有统领之才，公正严明。",
+      "ESFJ":"【和顺安邦人】和善热心，善聚人心，体恤周遭，以和气立身。",
+      "ENFJ":"【明德教化君】温润有担当，善引人心向善，胸怀格局，德化四方。",
+      "ENTJ":"【君临天下者】果敢坚毅，志向高远，有领袖气度，能担大事、掌大局。"
     };
 
-    // ========== 全局变量 ==========
     let currentQuestion = 0;
     let answers = {};
     const questionContainer = document.getElementById('questionContainer');
@@ -428,112 +484,116 @@
     const resultModal = document.getElementById('resultModal');
     const closeResult = document.getElementById('closeResult');
 
-    // ========== 初始化页面 ==========
+    // 分值映射：不符合0，比较符合1，完全符合2
+    const scoreMap = { "不符合":0, "比较符合":1, "完全符合":2 };
+
     function init() {
       renderQuestions();
       showQuestion(currentQuestion);
       setupTheme();
     }
 
-    // 渲染所有题目
     function renderQuestions() {
       questions.forEach((q, index) => {
         const qDiv = document.createElement('div');
         qDiv.className = 'question';
         qDiv.dataset.index = index;
-        
         qDiv.innerHTML = `
           <p>${index + 1}. ${q.text}</p>
           <div class="options">
-            <button class="option-btn" data-type="${q.type}">完全符合</button>
+            <button class="option-btn" data-type="${q.type}">不符合</button>
             <button class="option-btn" data-type="${q.type}">比较符合</button>
+            <button class="option-btn" data-type="${q.type}">完全符合</button>
           </div>
         `;
         questionContainer.appendChild(qDiv);
       });
-
-      // 绑定选项点击事件
       document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', selectOption);
       });
     }
 
-    // 显示当前题目
     function showQuestion(index) {
       document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
       document.querySelector(`.question[data-index="${index}"]`).classList.add('active');
-      
-      // 更新进度
       const progress = ((index + 1) / questions.length) * 100;
       progressBar.style.width = progress + '%';
-      
-      // 按钮状态
       prevBtn.disabled = index === 0;
       nextBtn.textContent = index === questions.length - 1 ? '查看结果' : '下一题';
-      
-      // 恢复已选答案
+
       const selected = answers[index];
       if (selected) {
-        const currentQ = document.querySelector(`.question[data-index="${index}"]`);
-        currentQ.querySelectorAll('.option-btn').forEach(btn => {
-          btn.classList.remove('selected');
-          if (btn.textContent === selected.text) {
-            btn.classList.add('selected');
-          }
+        const curQ = document.querySelector(`.question[data-index="${index}"]`);
+        curQ.querySelectorAll('.option-btn').forEach(btn => {
+          btn.classList.toggle('selected', btn.textContent === selected.text);
         });
       }
     }
 
-    // 选择选项
     function selectOption(e) {
       const parent = e.target.closest('.question');
       const index = parseInt(parent.dataset.index);
       const type = e.target.dataset.type;
       const text = e.target.textContent;
-      
-      // 保存答案
       answers[index] = { type, text };
-      
-      // 样式更新
       parent.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
       e.target.classList.add('selected');
     }
 
-    // 计算MBTI结果
-    function calculateResult() {
-      const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-      
+    // 计算分值与四大维度
+    function calcDimension() {
+      let raw = {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
       Object.values(answers).forEach(ans => {
-        counts[ans.type]++;
+        let s = scoreMap[ans.text];
+        raw[ans.type] += s;
       });
-      
-      // 生成类型
+
+      // 计算各维度百分比
+      const EI = Math.min(100, Math.max(0, 50 + (raw.E - raw.I) / ((raw.E + raw.I)||1) * 50));
+      const SN = Math.min(100, Math.max(0, 50 + (raw.S - raw.N) / ((raw.S + raw.N)||1) * 50));
+      const TF = Math.min(100, Math.max(0, 50 + (raw.T - raw.F) / ((raw.T + raw.F)||1) * 50));
+      const JP = Math.min(100, Math.max(0, 50 + (raw.J - raw.P) / ((raw.J + raw.P)||1) * 50));
+
+      // 生成4字母类型
       const type = [
-        counts.E >= counts.I ? 'E' : 'I',
-        counts.S >= counts.N ? 'S' : 'N',
-        counts.T >= counts.F ? 'T' : 'F',
-        counts.J >= counts.P ? 'J' : 'P'
+        EI >= 50 ? 'E' : 'I',
+        SN >= 50 ? 'S' : 'N',
+        TF >= 50 ? 'T' : 'F',
+        JP >= 50 ? 'J' : 'P'
       ].join('');
-      
-      return type;
+
+      return { EI, SN, TF, JP, type };
     }
 
-    // 显示结果
+    // 渲染四大维度进度条
+    function renderDimension(d) {
+      document.getElementById('barEI').style.width = d.EI + '%';
+      document.getElementById('barEI2').style.width = (100 - d.EI) + '%';
+
+      document.getElementById('barSN').style.width = d.SN + '%';
+      document.getElementById('barSN2').style.width = (100 - d.SN) + '%';
+
+      document.getElementById('barTF').style.width = d.TF + '%';
+      document.getElementById('barTF2').style.width = (100 - d.TF) + '%';
+
+      document.getElementById('barJP').style.width = d.JP + '%';
+      document.getElementById('barJP2').style.width = (100 - d.JP) + '%';
+    }
+
     function showResult() {
-      const type = calculateResult();
-      document.getElementById('resultType').textContent = type;
-      document.getElementById('resultDesc').textContent = mbtiResults[type] || "秉性独特，自有风骨";
+      const dim = calcDimension();
+      renderDimension(dim);
+      document.getElementById('resultType').innerText = dim.type;
+      document.getElementById('resultDesc').innerText = mbtiResults[dim.type] || "秉性独特，自有大明风骨";
       resultModal.classList.add('show');
     }
 
-    // 主题切换
     function setupTheme() {
       const isDark = localStorage.getItem('darkMode') === 'true';
       if (isDark) {
         document.body.classList.add('dark-mode');
         themeToggle.textContent = '☀️';
       }
-      
       themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         const dark = document.body.classList.contains('dark-mode');
@@ -542,14 +602,11 @@
       });
     }
 
-    // ========== 按钮事件 ==========
     nextBtn.addEventListener('click', () => {
-      // 检查是否已选
       if (!answers[currentQuestion]) {
         alert('请选择一项答案');
         return;
       }
-      
       if (currentQuestion === questions.length - 1) {
         showResult();
       } else {
@@ -569,7 +626,6 @@
       resultModal.classList.remove('show');
     });
 
-    // 初始化
     window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
