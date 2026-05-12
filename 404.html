@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - 此页未寻</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 明朝主色调：朱红、明黄、玄黑、宣纸米白 */
+        :root {
+            --ming-red: #9D2933; /* 明代朱红 */
+            --ming-yellow: #D4A017; /* 明黄 */
+            --ming-black: #1A1411; /* 玄黑 */
+            --ming-paper: #F5F0E1; /* 宣纸色 */
+            --ming-line: #8C6A4B; /* 木纹/回纹色 */
+        }
+
+        body {
+            font-family: "KaiTi", "STKaiti", "SimSun", serif; /* 楷体/宋体 古风字体 */
+            background-color: var(--ming-paper);
+            background-image: 
+                url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSIxMDAiIHZpZXdCb3g9IjAgMCA1NiAxMDAiPgogIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICA8cGF0aCBzdHJva2U9IiM4QzZBNEIiIHN0cm9rZS13aWR0aD0iMS41IiBkPSJNMjggMTBMMCA1MGwyOCA0MGwyOC00MEwyOCAxMHoiLz4KICA8L2c+Cjwvc3ZnPg=="); /* 明代祥云底纹 */
+            color: var(--ming-black);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 主容器 - 明代牌匾样式 */
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+            padding: 60px 30px;
+            background: rgba(245, 240, 225, 0.9);
+            border: 3px solid var(--ming-line);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 0 0 2px var(--ming-red);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 四角回纹装饰 */
+        .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--ming-red);
+        }
+        .corner-tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 15px; right: 15px; border-bottom: none; }
+        .corner-bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .corner-br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+
+        /* 404大字 - 毛笔书法效果 */
+        .error-code {
+            font-size: 120px;
+            font-weight: bold;
+            color: var(--ming-red);
+            text-shadow: 3px 3px 0 var(--ming-line);
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+        }
+
+        /* 标题文字 */
+        .error-title {
+            font-size: 36px;
+            color: var(--ming-black);
+            margin-bottom: 15px;
+            letter-spacing: 5px;
+        }
+
+        /* 描述文字 */
+        .error-desc {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #4A3C31;
+            margin-bottom: 40px;
+        }
+
+        /* 古风按钮 - 明代官印样式 */
+        .back-btn {
+            display: inline-block;
+            padding: 12px 35px;
+            font-size: 18px;
+            font-family: "SimHei", sans-serif;
+            color: var(--ming-paper);
+            background-color: var(--ming-red);
+            border: 2px solid var(--ming-black);
+            border-radius: 4px;
+            text-decoration: none;
+            box-shadow: 2px 2px 0 var(--ming-line);
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+        }
+
+        .back-btn:hover {
+            background-color: #7A1F27;
+            transform: translateY(-2px);
+            box-shadow: 3px 3px 0 var(--ming-line);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 80px;
+            }
+            .error-title {
+                font-size: 28px;
+            }
+            .error-desc {
+                font-size: 18px;
+            }
+            .error-container {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <!-- 四角回纹装饰 -->
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="error-code">404</div>
+        <h1 class="error-title">此页未寻</h1>
+        <p class="error-desc">
+            踏遍山河，未寻此页<br>
+            大明风华依旧，君请归位，重返正途
+        </p>
+        <!-- 已修改为你的官网链接 -->
+        <a href="https://mingdynasty1.github.io" class="back-btn">返回首页</a>
+    </div>
+</body>
+</html>
