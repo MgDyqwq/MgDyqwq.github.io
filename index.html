@@ -3,75 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大明皇帝的备用网站 | MingDynasty</title>
+    <title>大明皇帝网站 - 备用站 | MingDynasty</title>
     <!-- 网站头像 -->
     <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
     <style>
-        /* 基础样式重置 */
+        /* 基础重置 & 全局鼠标样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+            font-family: "SimSun", "KaiTi", "Microsoft YaHei", serif;
+            /* 全局古风鼠标 */
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%239e2b25" d="M12 2L8 10H2l6 5-2 7 6-4 6 4-2-7 6-5h-6L12 2z"/></svg>'), auto;
+        }
+
+        /* 可点击元素专属鼠标 */
+        a, button, .nav-item {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"><path fill="%23d4af37" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'), pointer;
         }
 
         /* 明制亮色主题（默认）*/
         :root {
             --bg-color: #fdf6e3;
+            --bg-pattern: #f8ecd1;
             --text-color: #3a2e22;
             --card-bg: #fff9e8;
             --border-color: #c49348;
             --title-color: #9e2b25;
+            --sub-title: #b84030;
             --btn-bg: #9e2b25;
             --btn-text: #fff;
-            --shadow: 0 4px 12px rgba(196, 147, 72, 0.2);
+            --shadow: 0 4px 12px rgba(196, 147, 72, 0.25);
+            --divider: linear-gradient(90deg, transparent, #c49348, transparent);
         }
 
         /* 暗色主题 */
         [data-theme="dark"] {
             --bg-color: #1a1410;
+            --bg-pattern: #241c16;
             --text-color: #e6d5b8;
             --card-bg: #2d241b;
             --border-color: #a67c39;
             --title-color: #d4af37;
+            --sub-title: #e0b860;
             --btn-bg: #d4af37;
             --btn-text: #1a1410;
-            --shadow: 0 4px 12px rgba(166, 124, 57, 0.15);
+            --shadow: 0 4px 12px rgba(166, 124, 57, 0.2);
+            --divider: linear-gradient(90deg, transparent, #a67c39, transparent);
         }
 
         body {
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(var(--bg-pattern) 1px, transparent 1px);
+            background-size: 30px 30px;
             color: var(--text-color);
             min-height: 100vh;
             transition: all 0.3s ease;
             line-height: 1.8;
+            padding-bottom: 3rem;
+        }
+
+        /* 顶部装饰栏 */
+        .top-decor {
+            height: 12px;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--border-color),
+                var(--border-color) 10px,
+                transparent 10px,
+                transparent 20px
+            );
         }
 
         /* 页面容器 */
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 2rem 1.5rem;
         }
 
-        /* 头部样式 */
+        /* 头部区域 */
         .header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem;
             position: relative;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header::before, .header::after {
+            content: "◆";
+            color: var(--border-color);
+            font-size: 1.5rem;
+            margin: 0 1rem;
         }
 
         .title {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             color: var(--title-color);
             font-weight: bold;
-            margin-bottom: 0.5rem;
-            letter-spacing: 2px;
+            margin-bottom: 0.8rem;
+            letter-spacing: 6px;
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
+            letter-spacing: 2px;
+        }
+
+        .domain {
+            margin-top: 0.6rem;
+            font-size: 1rem;
+            color: var(--sub-title);
         }
 
         /* 主题切换按钮 */
@@ -82,11 +128,11 @@
             background: var(--btn-bg);
             color: var(--btn-text);
             border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            font-size: 1rem;
             transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         .theme-toggle:hover {
@@ -94,7 +140,30 @@
             transform: scale(1.05);
         }
 
-        /* 卡片样式 */
+        /* 导航栏 */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: 0.3s;
+        }
+
+        .nav-item:hover {
+            background: var(--border-color);
+            color: #fff;
+        }
+
+        /* 通用卡片样式 */
         .card {
             background: var(--card-bg);
             border: 2px solid var(--border-color);
@@ -102,20 +171,61 @@
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         .card h2 {
             color: var(--title-color);
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-            border-left: 4px solid var(--border-color);
-            padding-left: 10px;
+            margin-bottom: 1.2rem;
+            font-size: 1.6rem;
+            border-left: 5px solid var(--border-color);
+            padding-left: 12px;
+            letter-spacing: 2px;
         }
 
         .card p {
-            font-size: 1.05rem;
+            font-size: 1.08rem;
             margin-bottom: 1rem;
             text-align: justify;
+        }
+
+        /* 分割线 */
+        .divider {
+            height: 2px;
+            background: var(--divider);
+            margin: 2rem 0;
+        }
+
+        /* 列表样式 */
+        .info-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .info-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: "▪";
+            color: var(--title-color);
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
         }
 
         /* 跳转按钮 */
@@ -124,84 +234,151 @@
             background: var(--btn-bg);
             color: var(--btn-text);
             text-decoration: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
+            padding: 0.9rem 1.8rem;
+            border-radius: 4px;
             font-weight: bold;
             margin-top: 1rem;
             transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         .jump-btn:hover {
             opacity: 0.9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+
+        /* 公告标签 */
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--title-color);
+            color: #fff;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
         }
 
         /* 底部 */
         .footer {
             text-align: center;
-            margin-top: 3rem;
-            padding-top: 1rem;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border-color);
-            opacity: 0.8;
-            font-size: 0.9rem;
+            opacity: 0.85;
+            font-size: 0.95rem;
         }
 
-        /* 响应式 */
+        /* 响应式适配 */
         @media (max-width: 768px) {
             .title {
-                font-size: 1.8rem;
+                font-size: 2rem;
+                letter-spacing: 3px;
             }
             .card {
                 padding: 1.5rem;
             }
             .theme-toggle {
                 position: static;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
             }
             .header {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
             }
+            .nav {
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 顶部装饰条 -->
+    <div class="top-decor"></div>
+
     <div class="container">
-        <!-- 头部 -->
+        <!-- 头部区域 -->
         <div class="header">
             <h1 class="title">大明皇帝网站 · 备用站</h1>
-            <p class="subtitle">mgdyqwq.github.io</p>
-            <button class="theme-toggle" id="themeBtn">切换暗色/亮色</button>
+            <p class="subtitle">传承明代历史文化 | 史料汇总平台</p>
+            <p class="domain">访问域名：mgdyqwq.github.io</p>
+            <button class="theme-toggle" id="themeBtn">明暗主题切换</button>
         </div>
 
-        <!-- 主内容卡片 -->
-        <div class="card">
-            <h2>站点说明</h2>
-            <p>因大明皇帝主站信息内容过多，整理与维护难度较大，后续所有<strong>新增内容、版本更新、资料补充</strong>将统一迁移至本备用站发布。</p>
-            <p>主站将保留原有内容不再进行大规模更新，欢迎大家收藏本备用站获取最新资讯。</p>
-            
-            <a href="https://MingDynasty1.github.io" class="jump-btn" target="_blank">前往主站</a>
+        <!-- 导航栏 -->
+        <div class="nav">
+            <a href="#notice" class="nav-item">站点公告</a>
+            <a href="#update" class="nav-item">更新计划</a>
+            <a href="#content" class="nav-item">内容分类</a>
+            <a href="#about" class="nav-item">关于本站</a>
         </div>
 
-        <!-- 底部 -->
+        <!-- 站点公告卡片 -->
+        <div class="card" id="notice">
+            <h2>📜 站点重要公告</h2>
+            <p><span class="tag">重要通知</span> 因原主站内容体量庞大，史料、图文、典籍数量繁多，日常整理、维护与更新难度大幅增加。为保障内容更新效率与浏览体验，<strong>后续所有全新内容、资料增补、版本迭代均转移至本备用站运营</strong>。</p>
+            <p>主站将永久保留已发布全部历史内容，不再进行大规模内容更新与板块调整。建议各位访客收藏本站，第一时间获取明代相关最新史料与资讯。</p>
+
+            <div class="divider"></div>
+
+            <h2>🔗 主站入口</h2>
+            <p>如需查阅历史归档内容，可点击下方按钮跳转至官方主站：</p>
+            <a href="https://MingDynasty1.github.io" class="jump-btn" target="_blank">前往大明皇帝主站</a>
+        </div>
+
+        <!-- 更新计划卡片 -->
+        <div class="card" id="update">
+            <h2>📋 后续更新规划</h2>
+            <ul class="info-list">
+                <li>明代帝王生平详解、年号、在位事迹补充完善</li>
+                <li>明代朝堂制度、官职体系、律法典籍整理</li>
+                <li>明代军事、边防、重大战役图文资料更新</li>
+                <li>明代文学、书画、工艺、民俗文化板块扩充</li>
+                <li>历代名臣、名将、名士人物传记收录</li>
+                <li>明代地理、城池、疆域沿革史料补充</li>
+            </ul>
+            <p>本站将持续稳步更新，打造全面、详实的明代历史资料库。</p>
+        </div>
+
+        <!-- 内容分类卡片 -->
+        <div class="card" id="content">
+            <h2>📚 站内内容分类</h2>
+            <ul class="info-list">
+                <li>帝王谱系：明朝十六帝完整资料、生平轶事</li>
+                <li>朝堂政务：内阁、六部、监察体系讲解</li>
+                <li>历史事件：重大朝政、战争、变革纪实</li>
+                <li>文化艺术：诗词、书画、建筑、服饰赏析</li>
+                <li>人物列传：文武百官、文人雅士、历史名人</li>
+                <li>风物杂记：社会生活、民俗、科技与物产</li>
+            </ul>
+        </div>
+
+        <!-- 关于本站卡片 -->
+        <div class="card" id="about">
+            <h2>🏮 关于本站</h2>
+            <p>大明皇帝网站致力于梳理、展示明朝三百余年的历史文化，以通俗易懂的形式整理正史记载、野史典故、文物史料，为历史爱好者提供优质的查阅平台。</p>
+            <p>本站备用站延续主站风格，沿用传统中式设计，分明暗两种视觉模式，适配不同使用场景。所有内容均以历史资料为依托，力求客观严谨。</p>
+            <p>若有建议与交流想法，欢迎在留言区域互动探讨。</p>
+        </div>
+
+        <!-- 页脚 -->
         <div class="footer">
-            <p> © 2013-2026 MingDynasty,Inc.备用主站（开始研发）</p>
+            <p>© 2013-2026 MingDynasty,Inc. | mgdyqwq.github.io | 大明副站</p>
+            <p>传承明史文化 · 尊重历史原貌</p>
         </div>
     </div>
 
     <script>
-        // 主题切换功能
+        // 主题切换功能 + 本地存储记忆
         const themeBtn = document.getElementById('themeBtn');
         const html = document.documentElement;
 
-        // 读取本地存储的主题
         const savedTheme = localStorage.getItem('ming-theme');
         if (savedTheme) {
             html.setAttribute('data-theme', savedTheme);
         }
 
-        // 切换主题
         themeBtn.addEventListener('click', () => {
             const currentTheme = html.getAttribute('data-theme');
             if (currentTheme === 'dark') {
