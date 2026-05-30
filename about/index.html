@@ -1,1 +1,720 @@
-df
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于大明 | MingDynasty</title>
+  <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 自定义 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // 明朝风格颜色
+                        'ming-red': '#B22222',
+                        'ming-gold': '#DAA520',
+                        'ming-blue': '#1E3A8A',
+                        'ming-green': '#047857',
+                        'ming-cream': '#FFF8E1',
+                        'ming-dark': '#1C1917',
+                        'dark-bg': '#121212',
+                        'dark-text': '#E5E5E5',
+                        'dark-card': '#1E1E1E',
+                    },
+                    fontFamily: {
+                        'ming': ['SimSun', 'serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        'dragon-pattern': "url('https://mgdyqwq.github.io/about/1.jfif')",
+                        'forbidden-city': "url('https://mgdyqwq.github.io/about/2.jfif')",
+                    },
+                    boxShadow: {
+                        'scroll': 'inset 0 -10px 10px -10px rgba(0, 0, 0, 0.3)',
+                        'scroll-dark': 'inset 0 -10px 10px -10px rgba(255, 255, 255, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-gold {
+                text-shadow: 2px 2px 4px rgba(218, 165, 32, 0.5);
+            }
+            .border-double-gold {
+                box-shadow: 0 0 0 2px #DAA520, 0 0 0 4px #FFF8E1;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .chinese-pattern {
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23daa520' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            .dark .chinese-pattern {
+                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23daa520' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            .meteor-animation {
+                position: relative;
+                overflow: hidden;
+            }
+            .meteor-animation::before {
+                content: '';
+                position: absolute;
+                top: -10%;
+                left: -10%;
+                width: 120%;
+                height: 120%;
+                background: url('https://mgdyqwq.github.io/about/2.jfif');
+                background-size: cover;
+                background-position: center;
+                animation: meteor-move 20s linear infinite;
+                z-index: -1;
+            }
+            @keyframes meteor-move {
+                0% {
+                    transform: translateX(-10%) translateY(-10%);
+                }
+                100% {
+                    transform: translateX(10%) translateY(10%);
+                }
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .timeline-item {
+                position: relative;
+                padding-left: 30px;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                width: 2px;
+                background-color: #DAA520;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: -4px;
+                top: 0;
+                height: 10px;
+                width: 10px;
+                border-radius: 50%;
+                background-color: #B22222;
+            }
+        }
+    </style>
+</head>
+<body class="font-ming bg-ming-cream text-ming-dark dark:bg-dark-bg dark:text-dark-text transition-colors duration-300">
+    <!-- 顶部装饰 -->
+    <div class="w-full h-4 bg-gradient-to-r from-ming-red via-ming-gold to-ming-red dark:from-ming-red dark:via-ming-gold dark:to-ming-red"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="bg-white/80 dark:bg-dark-card/80 backdrop-blur-md shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full bg-dragon-pattern flex items-center justify-center">
+                    <span class="text-ming-gold text-2xl font-bold">明</span>
+                </div>
+                <span class="text-xl font-bold text-ming-red dark:text-ming-gold">大明王朝</span>
+            </div>
+            
+            <div class="flex items-center space-x-6">
+                <a href="#" class="hidden md:block hover:text-ming-red dark:hover:text-ming-gold transition-colors">首页</a>
+                <a href="#" class="hidden md:block hover:text-ming-red dark:hover:text-ming-gold transition-colors">历史</a>
+                <a href="#" class="hidden md:block hover:text-ming-red dark:hover:text-ming-gold transition-colors">文化</a>
+                <a href="#" class="hidden md:block text-ming-red dark:text-ming-gold font-bold">关于我们</a>
+                <a href="#" class="hidden md:block hover:text-ming-red dark:hover:text-ming-gold transition-colors">联系我们</a>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-button" class="md:hidden text-ming-dark dark:text-dark-text focus:outline-none">
+                    <i class="fa fa-bars text-xl"></i>
+                </button>
+                
+                <!-- 深色模式切换按钮 -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fa fa-sun-o dark:hidden text-ming-gold"></i>
+                    <i class="fa fa-moon-o hidden dark:block text-ming-gold"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-dark-card border-t border-gray-200 dark:border-gray-700">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-2">
+                <a href="#" class="py-2 hover:text-ming-red dark:hover:text-ming-gold transition-colors">首页</a>
+                <a href="#" class="py-2 hover:text-ming-red dark:hover:text-ming-gold transition-colors">历史</a>
+                <a href="#" class="py-2 hover:text-ming-red dark:hover:text-ming-gold transition-colors">文化</a>
+                <a href="#" class="py-2 text-ming-red dark:text-ming-gold font-bold">关于我们</a>
+                <a href="#" class="py-2 hover:text-ming-red dark:hover:text-ming-gold transition-colors">联系我们</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 标题区域 - 流星背景 -->
+        <div class="relative mb-12 meteor-animation rounded-lg">
+            <div class="relative py-24 px-8 text-center bg-black/30">
+                <h1 class="text-4xl md:text-6xl font-bold text-ming-red dark:text-ming-gold mb-4 text-shadow-gold">关于我们</h1>
+                <p class="text-lg md:text-2xl text-white max-w-3xl mx-auto text-shadow">探索大明王朝的历史与文化，传承中华文明的精髓</p>
+                <div class="mt-6 inline-block px-6 py-3 bg-ming-red/80 dark:bg-ming-gold/80 text-white rounded-md hover:bg-ming-red dark:hover:bg-ming-gold transition-colors cursor-pointer">
+                    <i class="fa fa-calendar mr-2"></i> 网站于2025年6月18日正式上线
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- 左侧内容 -->
+            <div class="md:col-span-2 space-y-8">
+                <!-- 我们的使命 -->
+                <section class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md border-l-4 border-ming-red dark:border-ming-gold card-hover">
+                    <h2 class="text-2xl font-bold text-ming-red dark:text-ming-gold mb-4 flex items-center">
+                        <i class="fa fa-book mr-2"></i>我们的使命
+                    </h2>
+                    <p class="mb-4">大明王朝网站致力于通过现代科技手段，重现明朝辉煌的历史与文化，让更多人了解和感受中华文明的博大精深。</p>
+                    <p>我们秉持"传承历史，弘扬文化"的理念，致力于为全球华人提供一个学习、交流和分享明朝历史文化的平台。</p>
+                    <div class="mt-6 flex flex-wrap gap-4">
+                        <div class="flex items-center">
+                            <i class="fa fa-check-circle text-ming-green mr-2"></i>
+                            <span>每周更新1-2次内容</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa fa-check-circle text-ming-green mr-2"></i>
+                            <span>提供权威历史资料</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fa fa-check-circle text-ming-green mr-2"></i>
+                            <span>互动社区交流</span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 朱元璋专题 -->
+                <section class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h2 class="text-2xl font-bold text-ming-red dark:text-ming-gold mb-6 flex items-center">
+                        <i class="fa fa-user-circle mr-2"></i>明太祖朱元璋
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- 朱元璋画像 -->
+                        <div class="md:col-span-1">
+                            <div class="rounded-lg overflow-hidden border-2 border-ming-gold">
+                                <img src="https://mgdyqwq.github.io/about/man.jpeg" 
+                                     alt="朱元璋画像" 
+                                     class="w-full h-auto">
+                            </div>
+                            <div class="mt-4 text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">明太祖朱元璋官方画像</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 朱元璋简介 -->
+                        <div class="md:col-span-2">
+                            <p class="mb-4">朱元璋（1328年10月21日-1398年6月24日），幼名重八、兴宗，字国瑞，濠州（今安徽凤阳）钟离太平乡孤庄村人，明朝开国皇帝。</p>
+                            <p class="mb-4">朱元璋出身贫苦，早年父母双亡，曾入皇觉寺为僧。元至正十二年（1352年），参加郭子兴领导的红巾军反抗元朝。至正十六年（1356年），攻占集庆路，改名应天府（今江苏南京），作为自己的根据地。</p>
+                            <p class="mb-4">至正二十八年（1368年），朱元璋在应天府称帝，国号大明，年号洪武。同年，攻占大都（今北京），推翻元朝统治。之后，又相继平定四川、云南等地，统一全国。</p>
+                            
+                            <div class="mt-6">
+                                <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-3">主要成就</h3>
+                                <ul class="list-disc list-inside space-y-2">
+                                    <li>建立明朝，统一中国</li>
+                                    <li>废除丞相制度，加强中央集权</li>
+                                    <li>实行卫所制度，巩固边防</li>
+                                    <li>推行屯田制度，发展经济</li>
+                                    <li>编纂《大明律》，完善法制</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 朱元璋生平时间线 -->
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">生平重要事件</h3>
+                        <div class="space-y-4">
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1328年</p>
+                                <p>朱元璋出生于濠州钟离县（今安徽凤阳）</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1344年</p>
+                                <p>父母、兄长因旱灾和瘟疫去世，入皇觉寺为僧</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1352年</p>
+                                <p>参加郭子兴领导的红巾军</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1356年</p>
+                                <p>攻占集庆路（今南京），改名应天府</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1363年</p>
+                                <p>鄱阳湖之战击败陈友谅</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1367年</p>
+                                <p>灭张士诚，统一江南</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1368年</p>
+                                <p>在应天府称帝，建立明朝</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1380年</p>
+                                <p>废除丞相制度，加强皇权</p>
+                            </div>
+                            <div class="timeline-item pl-6">
+                                <p class="font-bold">1398年</p>
+                                <p>朱元璋病逝，享年七十一岁，庙号太祖，葬于明孝陵</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 网站发展历程 -->
+                <section class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h2 class="text-2xl font-bold text-ming-red dark:text-ming-gold mb-4 flex items-center">
+                        <i class="fa fa-history mr-2"></i>
+                        <a href="https://mingdynasty1.github.io/gxrz.html" class="hover:underline">网站发展历程</a>
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-24 font-bold">2025年6月18日</div>
+                            <div>大明王朝网站正式上线，专注于明朝历史文化的传播</div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-24 font-bold">2025年7月</div>
+                            <div>推出"朱元璋专题"栏目，详细介绍明朝开国皇帝的生平与成就</div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-24 font-bold">2025年8月</div>
+                            <div>上线"明朝文物馆"，展示明朝珍贵文物图片与资料</div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-24 font-bold">2026年3月</div>
+                            <div>网站全面升级，引入AI技术，提供智能问答服务</div>
+                        </div>
+                    </div>
+                    <p class="mt-4">
+                        <a href="https://mingdynasty1.github.io/gxrz.html" class="text-ming-red dark:text-ming-gold hover:underline flex items-center">
+                            <i class="fa fa-arrow-right mr-2"></i>查看完整发展历程
+                        </a>
+                    </p>
+                </section>
+                
+                <!-- 我们的团队 -->
+                <section class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h2 class="text-2xl font-bold text-ming-red dark:text-ming-gold mb-4 flex items-center">
+                        <i class="fa fa-users mr-2"></i>
+                        <a href="https://mingdynasty1.github.io/MgDy.html" class="hover:underline">我们的团队</a>
+                    </h2>
+                    <p>我们拥有一支由历史学者、技术专家和内容编辑组成的专业团队，致力于为用户提供最权威、最丰富的明朝历史文化内容。</p>
+                    <p class="mt-4">
+                        <a href="https://mingdynasty1.github.io/MgDy.html" class="text-ming-red dark:text-ming-gold hover:underline flex items-center">
+                            <i class="fa fa-arrow-right mr-2"></i>查看完整团队介绍
+                        </a>
+                    </p>
+                </section>
+                
+                <!-- 朱元璋历史评价 -->
+                <section class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h2 class="text-2xl font-bold text-ming-red dark:text-ming-gold mb-4 flex items-center">
+                        <i class="fa fa-comments mr-2"></i>朱元璋历史评价
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 正面评价 -->
+                        <div>
+                            <h3 class="text-xl font-bold text-ming-green mb-3">正面评价</h3>
+                            <ul class="space-y-3">
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-up text-ming-green mt-1 mr-2"></i>
+                                    <p>《明史》评价朱元璋："帝天授智勇，统一方夏，纬武经文，为汉、唐、宋诸君所未及。"</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-up text-ming-green mt-1 mr-2"></i>
+                                    <p>康熙皇帝评价："治隆唐宋"，认为朱元璋治理下的明朝超过唐宋。</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-up text-ming-green mt-1 mr-2"></i>
+                                    <p>朱元璋建立的制度为明朝276年的统治奠定了基础。</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-up text-ming-green mt-1 mr-2"></i>
+                                    <p>重视农业生产，推行屯田制度，使经济得到恢复和发展。</p>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- 负面评价 -->
+                        <div>
+                            <h3 class="text-xl font-bold text-ming-red mb-3">负面评价</h3>
+                            <ul class="space-y-3">
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-down text-ming-red mt-1 mr-2"></i>
+                                    <p>晚年猜忌心重，制造胡惟庸案、蓝玉案等大狱，诛杀大量功臣。</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-down text-ming-red mt-1 mr-2"></i>
+                                    <p>废除丞相制度，导致皇权过度集中，为后世留下隐患。</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-down text-ming-red mt-1 mr-2"></i>
+                                    <p>设立锦衣卫，实行特务统治，加强思想控制。</p>
+                                </li>
+                                <li class="flex">
+                                    <i class="fa fa-thumbs-down text-ming-red mt-1 mr-2"></i>
+                                    <p>实行海禁政策，限制对外贸易，阻碍了资本主义萌芽的发展。</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- 朱元璋历史地位图表 -->
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">朱元璋历史地位评估</h3>
+                        <div class="h-80">
+                            <canvas id="emperorChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- 右侧边栏 -->
+            <div class="space-y-6">
+                <!-- 明朝历史概览 -->
+                <div class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md border-t-4 border-ming-gold card-hover">
+                    <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">明朝历史概览</h3>
+                    <p class="mb-4">明朝（1368年-1644年）是中国历史上最后一个由汉族建立的大一统王朝，历经十六位皇帝，享国276年。</p>
+                    <p class="mb-4">明朝是中国历史上经济、文化、科技高度发达的时期，也是中国历史上对外交流最为频繁的时期之一。</p>
+                    
+                    <!-- 明朝皇帝列表 -->
+                    <div class="mt-6">
+                        <h4 class="font-bold text-ming-red dark:text-ming-gold mb-2">明朝皇帝列表</h4>
+                        <div class="max-h-60 overflow-y-auto scrollbar-hide pr-2 space-y-2">
+                            <div class="flex justify-between">
+                                <span>太祖朱元璋</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1368-1398</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>惠帝朱允炆</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1398-1402</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>成祖朱棣</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1402-1424</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>仁宗朱高炽</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1424-1425</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>宣宗朱瞻基</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1425-1435</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>英宗朱祁镇</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1435-1449</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>代宗朱祁钰</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1449-1457</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>英宗朱祁镇</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1457-1464</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>宪宗朱见深</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1464-1487</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>孝宗朱祐樘</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1487-1505</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>武宗朱厚照</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1505-1521</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>世宗朱厚熜</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1521-1566</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>穆宗朱载坖</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1566-1572</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>神宗朱翊钧</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1572-1620</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>光宗朱常洛</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1620</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>熹宗朱由校</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1620-1627</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>思宗朱由检</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">1627-1644</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 朱元璋专题组件 -->
+                <div class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">朱元璋专题</h3>
+                    
+                    <!-- 朱元璋画像对比 -->
+                    <div class="mb-6">
+                        <h4 class="font-bold mb-2">朱元璋画像对比</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <img src="https://mgdyqwq.github.io/about/1.jfif" 
+                                     alt="朱元璋官方画像" 
+                                     class="w-full h-auto rounded border border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-center mt-1 text-gray-600 dark:text-gray-400">官方标准像</p>
+                            </div>
+                            <div>
+                                <img src="https://mgdyqwq.github.io/about/2.jfif" 
+                                     alt="朱元璋民间画像" 
+                                     class="w-full h-auto rounded border border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-center mt-1 text-gray-600 dark:text-gray-400">民间异像</p>
+                            </div>
+                        </div>
+                        <p class="text-xs mt-2 text-gray-600 dark:text-gray-400">朱元璋的画像有两种截然不同的版本，反映了历史形象的复杂性。</p>
+                    </div>
+                    
+                    <!-- 朱元璋名言 -->
+                    <div class="mb-6">
+                        <h4 class="font-bold mb-2">朱元璋名言</h4>
+                        <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+                            <p class="italic">"朕本淮右布衣，天下于我何加焉？"</p>
+                            <p class="text-right text-sm mt-2">— 朱元璋</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 朱元璋相关景点 -->
+                    <div>
+                        <h4 class="font-bold mb-2">相关历史景点</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <i class="fa fa-map-marker text-ming-red dark:text-ming-gold mr-2"></i>
+                                <span>明孝陵（南京）</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa fa-map-marker text-ming-red dark:text-ming-gold mr-2"></i>
+                                <span>明中都皇故城（凤阳）</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa fa-map-marker text-ming-red dark:text-ming-gold mr-2"></i>
+                                <span>龙兴寺（凤阳）</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fa fa-map-marker text-ming-red dark:text-ming-gold mr-2"></i>
+                                <span>明十三陵（北京）</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 内容更新计划 -->
+                <div class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">内容更新计划</h3>
+                    <p>我们每周更新1-2次内容，为您带来最新的明朝历史研究成果和文化解读。</p>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div class="bg-white dark:bg-dark-card rounded-lg p-6 shadow-md card-hover">
+                    <h3 class="text-xl font-bold text-ming-red dark:text-ming-gold mb-4">联系我们</h3>
+                    <p class="mb-4">如需了解更多信息或有任何问题，请访问我们的联系页面。</p>
+                    <a href="https://mingdynasty1.github.io/contact-us-MgDy.html" class="inline-block px-6 py-3 bg-ming-red dark:bg-ming-gold text-white rounded-md hover:bg-ming-red/90 dark:hover:bg-ming-gold/90 transition-colors flex items-center justify-center w-full md:w-auto">
+                        <i class="fa fa-envelope mr-2"></i> 访问联系页面
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 页脚 -->
+    <footer class="bg-ming-dark dark:bg-dark-bg text-white dark:text-dark-text mt-12 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2013-2026 MingDynasty,Inc. | 关于大明</p>
+        </div>
+        <div class="w-full h-4 bg-gradient-to-r from-ming-red via-ming-gold to-ming-red"></div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // 深色模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // 检查本地存储中的主题偏好
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        // 移动端菜单
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 如果是移动端，点击后关闭菜单
+                    if (window.innerWidth < 768) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+        
+        // 滚动时导航栏阴影效果
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+        
+        // 朱元璋历史地位评估图表
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('emperorChart').getContext('2d');
+            
+            const chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['政治才能', '军事成就', '经济改革', '文化贡献', '后世影响', '个人品德'],
+                    datasets: [
+                        {
+                            label: '朱元璋',
+                            data: [95, 90, 85, 70, 90, 65],
+                            backgroundColor: 'rgba(178, 34, 34, 0.2)',
+                            borderColor: 'rgba(178, 34, 34, 1)',
+                            pointBackgroundColor: 'rgba(178, 34, 34, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(178, 34, 34, 1)'
+                        },
+                        {
+                            label: '唐太宗',
+                            data: [90, 95, 90, 95, 95, 85],
+                            backgroundColor: 'rgba(30, 58, 138, 0.2)',
+                            borderColor: 'rgba(30, 58, 138, 1)',
+                            pointBackgroundColor: 'rgba(30, 58, 138, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(30, 58, 138, 1)'
+                        },
+                        {
+                            label: '宋太祖',
+                            data: [85, 85, 80, 85, 80, 80],
+                            backgroundColor: 'rgba(4, 120, 87, 0.2)',
+                            borderColor: 'rgba(4, 120, 87, 1)',
+                            pointBackgroundColor: 'rgba(4, 120, 87, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(4, 120, 87, 1)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '/100';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 深色模式切换时更新图表颜色
+            themeToggle.addEventListener('click', () => {
+                const isDark = html.classList.contains('dark');
+                chart.options.scales.r.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                chart.options.scales.r.pointLabels.color = isDark ? '#E5E5E5' : '#1C1917';
+                chart.update();
+            });
+            
+            // 初始化图表颜色
+            const isDark = html.classList.contains('dark');
+            chart.options.scales.r.grid.color = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            chart.options.scales.r.pointLabels.color = isDark ? '#E5E5E5' : '#1C1917';
+            chart.update();
+        });
+        
+
+    </script>
+</body>
+</html>
