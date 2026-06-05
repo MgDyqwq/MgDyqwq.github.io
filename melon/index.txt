@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大明吃瓜 | MingDynasty</title>
+<link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+  <style>
+    /* 基础重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "KaiTi", "STKaiti", serif;
+    }
+
+    /* 明/暗 主题变量 */
+    :root {
+      --bg: #fff8e1;
+      --text: #2b2b2b;
+      --primary: #c41e3a; /* 朱红 */
+      --secondary: #ffcc00; /* 明黄 */
+      --border: #8b4513;
+      --card: #ffffff;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg: #1a1410;
+      --text: #f5f5f5;
+      --primary: #e63946;
+      --secondary: #ffd700;
+      --border: #b8860b;
+      --card: #2d241b;
+      --shadow: rgba(255,215,0,0.1);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      transition: all 0.3s ease;
+      line-height: 1.7;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239c928c' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    /* 头部样式 */
+    .header {
+      text-align: center;
+      padding: 2rem 1rem;
+      position: relative;
+      border-bottom: 3px double var(--border);
+      background: linear-gradient(to bottom, var(--secondary), transparent 120%);
+    }
+
+    .title {
+      font-size: 2.4rem;
+      color: var(--primary);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.85;
+    }
+
+    /* 明暗切换按钮 */
+    .theme-toggle {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: var(--card);
+      border: 2px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* 内容容器 */
+    .container {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+
+    /* 明朝风格卡片 */
+    .card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+    }
+
+    .card-title {
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    /* 图片样式 */
+    .card-image {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin: 1rem 0;
+      object-fit: cover;
+    }
+
+    .card p {
+      font-size: 1.05rem;
+      margin: 0.8rem 0;
+      text-align: justify;
+    }
+
+    /* 印章效果 */
+    .seal {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+      border: 2px solid white;
+      opacity: 0.8;
+      transform: rotate(-15deg);
+    }
+
+    /* 底部 */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      border-top: 3px double var(--border);
+      margin-top: 4rem;
+      font-size: 0.95rem;
+      opacity: 0.8;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .title {
+        font-size: 1.8rem;
+      }
+      .theme-toggle {
+        position: static;
+        margin: 1rem auto 0;
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 头部 -->
+  <div class="header">
+    <h1 class="title">大明吃瓜历史</h1>
+    <p class="subtitle">大明朝那些不为人知的趣闻轶事</p>
+    <button class="theme-toggle" id="themeBtn">🌙 切换明暗</button>
+  </div>
+
+  <!-- 内容区 -->
+  <div class="container">
+    <div class="card">
+      <h2 class="card-title">洪武风云 · 开国轶事</h2>
+      <img src="1.png" alt="明朝历史" class="card-image">
+      <p>大明开国皇帝朱元璋，出身布衣，起于微末，平定天下，恢复中华，奠定了近三百年的大明基业。</p>
+      <p>民间多传其铁腕治国，严打贪官，设立锦衣卫，一时之间朝野肃然，也留下了无数坊间吃瓜谈资。</p>
+      <div class="seal">洪武御批</div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">永乐盛世 · 万国来朝</h2>
+      <img src="2.png" alt="明朝历史" class="card-image">
+      <p>明成祖朱棣夺位登基，迁都北京，修建紫禁城，派遣郑和七下西洋，远航四海，扬威海外。</p>
+      <p>这一时期文化昌盛、国力强盛，《永乐大典》编纂完成，成为中国古代最大的类书，堪称千古盛事。</p>
+      <div class="seal">永乐之宝</div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">仁宣之治 · 太平岁月</h2>
+      <img src="3.png" alt="明朝历史" class="card-image">
+      <p>仁宗、宣宗两代皇帝休养生息、宽刑省狱，重用贤臣，吏治清明，经济发展，百姓安居乐业。</p>
+      <p>这一时期被后世称为“仁宣之治”，是明朝最安稳、最富庶的黄金年代，宫闱内外也留下不少温柔趣闻。</p>
+      <div class="seal">宣德御览</div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">晚明百态 · 市井繁华</h2>
+      <img src="4.png" alt="明朝历史" class="card-image">
+      <p>晚明商品经济高度繁荣，市民文化兴起，小说戏曲风行天下，江南富庶甲于天下。</p>
+      <p>朝堂党争、市井生活、江湖轶事交织在一起，构成了最鲜活、最热闹的“大明吃瓜图鉴”，流传至今。</p>
+      <div class="seal">万历印记</div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    © 2013-2026 MingDynasty,Inc. 大明吃瓜
+  </div>
+
+  <!-- 明暗切换脚本 -->
+  <script>
+    const toggleBtn = document.getElementById('themeBtn');
+    const html = document.documentElement;
+
+    // 读取本地存储主题
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      html.setAttribute('data-theme', savedTheme);
+      toggleBtn.textContent = savedTheme === 'dark' ? '☀️ 切换明亮' : '🌙 切换明暗';
+    }
+
+    // 切换事件
+    toggleBtn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      if (current === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        toggleBtn.textContent = '🌙 切换明暗';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        toggleBtn.textContent = '☀️ 切换明亮';
+      }
+    });
+  </script>
+</body>
+</html>
