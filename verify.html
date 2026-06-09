@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大明核验 - 身份验证 | MingDynasty</title>
+  <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimSun", "KaiTi", "Microsoft YaHei", serif;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%239e2b25" d="M12 2L8 10H2l6 5-2 7 6-4 6 4-2-7 6-5h-6L12 2z"/></svg>'), auto;
+        }
+        a, button {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"><path fill="%23d4af37" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'), pointer;
+        }
+        :root {
+            --bg-color: #fdf6e3; --bg-pattern: #f8ecd1; --text-color: #3a2e22;
+            --card-bg: #fff9e8; --border-color: #c49348; --title-color: #9e2b25;
+            --btn-bg: #9e2b25; --btn-text: #fff;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1410; --bg-pattern: #241c16; --text-color: #e6d5b8;
+            --card-bg: #2d241b; --border-color: #a67c39; --title-color: #d4af37;
+            --btn-bg: #d4af37; --btn-text: #1a1410;
+        }
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; padding: 20px; transition: all 0.3s;
+        }
+        .verify-card {
+            background: var(--card-bg); border: 2px solid var(--border-color);
+            border-radius: 8px; width: 100%; max-width: 420px; padding: 30px;
+        }
+        .verify-title { font-size: 24px; color: var(--title-color);
+            text-align: center; margin-bottom: 10px; font-weight: bold;
+        }
+        .btn {
+            width: 100%; padding: 14px; background: var(--btn-bg);
+            color: var(--btn-text); border: none; border-radius: 6px;
+            font-size: 16px; cursor: pointer; margin: 8px 0;
+        }
+        .input {
+            width: 100%; padding: 12px; background: var(--card-bg);
+            color: var(--text-color); border: 1px solid var(--border-color);
+            border-radius: 6px; text-align: center; font-size: 16px;
+            margin: 10px 0;
+        }
+        #mathCanvas {
+            border: 1px solid var(--border-color); border-radius: 6px;
+            margin: 15px auto; display: block; background: #fff;
+        }
+        .slide-wrap {
+            width: 100%; height: 44px; background: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 6px;
+            position: relative; margin: 15px 0; overflow: hidden;
+        }
+        .slide-progress {
+            position: absolute; left:0; top:0; width:0%; height:100%;
+            background: var(--btn-bg); opacity: 0.2;
+        }
+        .slide-btn {
+            position: absolute; left:0; top:0; width:44px; height:44px;
+            background: var(--btn-bg); color:#fff; display: grid;
+            place-items: center;
+        }
+        .word-grid, .icon-grid {
+            display: grid; gap: 8px; margin: 15px 0;
+        }
+        .word-grid { grid-template-columns: repeat(3,1fr); }
+        .icon-grid { grid-template-columns: repeat(4,1fr); }
+        .word-item, .icon-item {
+            padding: 12px; background: var(--bg-color);
+            border: 1px solid var(--border-color); border-radius: 6px;
+            text-align: center; cursor: pointer;
+        }
+        .status { margin-top:15px; text-align: center; font-size:14px; }
+        .success { color: #2d8a3b; }
+        .error { color: #c92a2a; }
+        .theme-toggle {
+            position: fixed; top:20px; right:20px;
+            background: var(--btn-bg); color: var(--btn-text);
+            border: 1px solid var(--border-color); padding:8px 12px;
+            border-radius: 4px;
+        }
+        .verify-step { display: none; }
+        .verify-step.active { display: block; }
+    </style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeBtn">明暗切换</button>
+
+<div class="verify-card">
+    <div class="verify-title">大明核验</div>
+
+    <div class="verify-step" id="mathVerify">
+        <canvas id="mathCanvas" width="240" height="80"></canvas>
+        <input type="number" class="input" id="mathInput" placeholder="请输入结果">
+        <button class="btn" id="mathSubmit">确认验证</button>
+    </div>
+
+    <div class="verify-step" id="slideVerify">
+        <div class="slide-wrap">
+            <div class="slide-progress"></div>
+            <div class="slide-btn">→</div>
+        </div>
+    </div>
+
+    <div class="verify-step" id="wordVerify">
+        <p style="text-align:center; margin-bottom:10px">请点击【明】字</p>
+        <div class="word-grid"></div>
+    </div>
+
+    <div class="verify-step" id="iconVerify">
+        <p style="text-align:center; margin-bottom:10px">请点击🏮</p>
+        <div class="icon-grid"></div>
+    </div>
+
+    <div id="status" class="status"></div>
+</div>
+
+<script>
+    const COOKIE_EXPIRE_DAYS = 7;
+    const COOKIE_NAME = "ming_verified";
+    const SUCCESS_URL = "https://mgdyqwq.github.io";
+
+    function setCookie(n,v,d) {
+        const t = new Date(); t.setTime(t.getTime()+d*864e5);
+        document.cookie = n+"="+v+";path=/;expires="+t.toUTCString();
+    }
+    function getCookie(n) {
+        const m = document.cookie.match("(^| )"+n+"=([^;]+)");
+        return m?m[2]:null;
+    }
+    if(getCookie(COOKIE_NAME)==="true") location.href=SUCCESS_URL;
+
+    const html = document.documentElement;
+    const themeBtn = document.getElementById("themeBtn");
+    const saved = localStorage.getItem("ming-theme");
+    if(saved) html.setAttribute("data-theme", saved);
+    themeBtn.textContent = saved==="dark"?"切换亮色":"切换暗色";
+
+    themeBtn.onclick = () => {
+        const cur = html.getAttribute("data-theme");
+        if(cur==="dark"){
+            html.removeAttribute("data-theme");
+            localStorage.setItem("ming-theme","light");
+            themeBtn.textContent="切换暗色";
+        }else{
+            html.setAttribute("data-theme","dark");
+            localStorage.setItem("ming-theme","dark");
+            themeBtn.textContent="切换亮色";
+        }
+    };
+
+    let currentAnswer = null;
+    const steps = ["mathVerify","slideVerify","wordVerify","iconVerify"];
+    const status = document.getElementById("status");
+
+    function randomVerify(){
+        document.querySelectorAll(".verify-step").forEach(i=>i.classList.remove("active"));
+        const sel = steps[Math.floor(Math.random()*steps.length)];
+        document.getElementById(sel).classList.add("active");
+        if(sel==="mathVerify")initMath();
+        if(sel==="slideVerify")initSlide();
+        if(sel==="wordVerify")initWord();
+        if(sel==="iconVerify")initIcon();
+    }
+
+    function success(){
+        status.textContent="✅ 验证成功！"; status.className="status success";
+        setCookie(COOKIE_NAME,"true",COOKIE_EXPIRE_DAYS);
+        setTimeout(()=>location.href=SUCCESS_URL,900);
+    }
+    function error(msg){
+        status.textContent=msg; status.className="status error";
+        setTimeout(randomVerify,1300);
+    }
+
+    function initMath(){
+        const c=document.getElementById("mathCanvas"),ctx=c.getContext("2d");
+        const a=Math.floor(Math.random()*50)+1,b=Math.floor(Math.random()*50)+1;
+        currentAnswer=a+b; ctx.clearRect(0,0,c.width,c.height);
+        ctx.font="36px SimSun"; ctx.fillStyle="#9e2b25"; ctx.textAlign="center";
+        ctx.fillText(a+" + "+b+" = ?",c.width/2,50);
+        document.getElementById("mathSubmit").onclick=()=>{
+            +document.getElementById("mathInput").value===currentAnswer?success():error("❌ 答案错误");
+        }
+    }
+
+    function initSlide(){
+        const wrap=document.querySelector(".slide-wrap"),btn=document.querySelector(".slide-btn");
+        const prog=document.querySelector(".slide-progress"),max=wrap.offsetWidth-44;
+        let drag=false; btn.onmousedown=e=>{drag=true;e.preventDefault()};
+        document.onmousemove=e=>{
+            if(!drag)return; let x=e.clientX-wrap.getBoundingClientRect().left;
+            x=Math.max(0,Math.min(x,max)); btn.style.left=x+"px"; prog.style.width=x+"px";
+        };
+        document.onmouseup=()=>{
+            if(!drag)return; drag=false;
+            +btn.style.left>=max-5?success():error("❌ 请滑到最右侧");
+        }
+    }
+
+    function initWord(){
+        const g=document.querySelector(".word-grid");g.innerHTML="";
+        const w=["清","明","汉","唐","宋","元"].sort(()=>Math.random()-0.5);
+        w.forEach(i=>{
+            const d=document.createElement("div");d.className="word-item";d.textContent=i;
+            d.onclick=()=>i==="明"?success():error("❌ 请点击正确的字");
+            g.appendChild(d);
+        })
+    }
+
+    function initIcon(){
+        const g=document.querySelector(".icon-grid");g.innerHTML="";
+        const i=["🏮","🧧","🀄","🎍","🍵","📜","🔴","🟡"].sort(()=>Math.random()-0.5);
+        i.forEach(ic=>{
+            const d=document.createElement("div");d.className="icon-item";d.textContent=ic;
+            d.onclick=()=>ic==="🏮"?success():error("❌ 请点击正确图标");
+            g.appendChild(d);
+        })
+    }
+
+    window.onload=randomVerify;
+</script>
+</body>
+</html>
