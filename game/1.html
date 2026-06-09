@@ -1,0 +1,640 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大明天轨 - 明朝风格跑酷 | MingDynasty</title>
+  <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义字体与动画 */
+        @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #8B0000; /* 朱红 */
+            --secondary-color: #D4AF37; /* 金色 */
+            --bg-light: #f4e4bc; /* 宣纸色 */
+            --bg-dark: #1a1a1a;
+            --text-light: #2c2c2c;
+            --text-dark: #e0e0e0;
+            --track-light: #5d4037;
+            --track-dark: #8d6e63;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            overflow: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .font-art {
+            font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        /* 明暗模式切换逻辑 */
+        body.light-mode {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+        
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+
+        /* 游戏画布容器 */
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 8px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%);
+            transition: filter 0.5s ease;
+        }
+
+        body.dark-mode canvas {
+            background: linear-gradient(to bottom, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            filter: brightness(0.8) contrast(1.1);
+        }
+
+        /* UI 覆盖层 */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .interactive-ui {
+            pointer-events: auto;
+        }
+
+        /* 按钮样式 */
+        .btn-ming {
+            background: linear-gradient(135deg, var(--primary-color), #a52a2a);
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            padding: 10px 24px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .btn-ming:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(139, 0, 0, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-ming:active {
+            transform: translateY(1px);
+        }
+
+        /* 主题切换按钮 */
+        #theme-toggle {
+            background: transparent;
+            border: 1px solid currentColor;
+            color: inherit;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #theme-toggle:hover {
+            background: rgba(128,128,128,0.1);
+        }
+
+        /* 分数板 */
+        .score-board {
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--secondary-color);
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 1.5rem;
+        }
+
+        /* 模态框背景 */
+        .modal-bg {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        /* 装饰性云纹 */
+        .cloud-pattern {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <!-- 背景装饰 -->
+    <div class="cloud-pattern top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/chinese-style.png')]"></div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- UI 层 -->
+        <div class="ui-layer">
+            <!-- 顶部栏 -->
+            <div class="flex justify-between items-start w-full max-w-4xl mx-auto interactive-ui">
+                <div class="score-board">
+                    <i class="fas fa-scroll mr-2"></i>得分: <span id="scoreDisplay">0</span>
+                </div>
+                <button id="theme-toggle" title="切换明暗主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <!-- 底部控制提示 -->
+            <div class="text-center opacity-70 text-sm mb-4 interactive-ui">
+                <p>按 [空格] 或 [点击屏幕] 跳跃 | 躲避障碍，收集元宝</p>
+            </div>
+        </div>
+
+        <!-- 开始/结束 模态框 -->
+        <div id="menuModal" class="absolute inset-0 flex items-center justify-center modal-bg z-50 interactive-ui">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-2xl border-4 border-[#8B0000] text-center max-w-md w-full mx-4 transition-colors duration-300">
+                <h1 class="text-5xl font-art text-[#8B0000] dark:text-[#D4AF37] mb-2">大明天轨</h1>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 font-serif">穿越紫禁之巅，挑战极限天梯</p>
+                
+                <div class="space-y-4">
+                    <button id="startBtn" class="btn-ming w-full rounded">
+                        <i class="fas fa-play mr-2"></i>开始征程
+                    </button>
+                    <div class="flex justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                        <span><i class="fas fa-trophy"></i> 最高分: <span id="highScoreDisplay">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 游戏核心逻辑
+         * 包含：渲染循环、物理引擎、状态管理、主题切换
+         */
+        
+        // --- 配置与常量 ---
+        const CONFIG = {
+            gravity: 0.6,
+            jumpStrength: -12,
+            speed: 5,
+            spawnRate: 120, // 帧数间隔
+            colors: {
+                light: {
+                    player: '#8B0000', // 朱红
+                    platform: '#5D4037', // 木色
+                    obstacle: '#2F4F4F', // 深灰绿
+                    coin: '#FFD700',     // 金色
+                    text: '#2c2c2c'
+                },
+                dark: {
+                    player: '#FF4500',   // 亮橙红
+                    platform: '#8D6E63', // 浅木色
+                    obstacle: '#A9A9A9', // 亮灰
+                    coin: '#FFFACD',     // 柠檬绸
+                    text: '#e0e0e0'
+                }
+            }
+        };
+
+        // --- 状态管理 ---
+        const state = {
+            isPlaying: false,
+            score: 0,
+            highScore: localStorage.getItem('mingGameHighScore') || 0,
+            frames: 0,
+            theme: localStorage.getItem('theme') || 'light',
+            entities: {
+                player: null,
+                platforms: [],
+                obstacles: [],
+                coins: [],
+                particles: []
+            }
+        };
+
+        // --- DOM 元素 ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('scoreDisplay');
+        const highScoreEl = document.getElementById('highScoreDisplay');
+        const menuModal = document.getElementById('menuModal');
+        const startBtn = document.getElementById('startBtn');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // --- 初始化画布尺寸 ---
+        function resizeCanvas() {
+            canvas.width = Math.min(window.innerWidth - 40, 800);
+            canvas.height = Math.min(window.innerHeight - 100, 600);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // --- 类定义 ---
+
+        class Player {
+            constructor() {
+                this.width = 40;
+                this.height = 40;
+                this.x = 100;
+                this.y = canvas.height / 2;
+                this.dy = 0;
+                this.onGround = false;
+                this.rotation = 0;
+            }
+
+            update() {
+                // 重力
+                this.dy += CONFIG.gravity;
+                this.y += this.dy;
+
+                // 地面碰撞检测 (简单起见，假设底部有隐形地面或平台)
+                if (this.y + this.height > canvas.height) {
+                    this.y = canvas.height - this.height;
+                    this.dy = 0;
+                    this.onGround = true;
+                    this.rotation = 0;
+                } else {
+                    this.onGround = false;
+                    // 跳跃旋转效果
+                    this.rotation += 0.1;
+                }
+            }
+
+            jump() {
+                if (this.onGround) {
+                    this.dy = CONFIG.jumpStrength;
+                    this.onGround = false;
+                    createParticles(this.x + this.width/2, this.y + this.height, 5, '#fff');
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                if (!this.onGround) ctx.rotate(this.rotation);
+                
+                // 绘制玩家 (简化为带有明朝风格的方块/角色)
+                ctx.fillStyle = state.theme === 'light' ? CONFIG.colors.light.player : CONFIG.colors.dark.player;
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                // 装饰：官帽示意
+                ctx.fillStyle = '#000';
+                ctx.fillRect(-this.width/2 - 5, -this.height/2 - 10, this.width + 10, 10);
+                
+                ctx.restore();
+            }
+        }
+
+        class Platform {
+            constructor(x, y, width) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = 20;
+                this.markedForDeletion = false;
+            }
+
+            update() {
+                this.x -= CONFIG.speed;
+                if (this.x + this.width < 0) this.markedForDeletion = true;
+            }
+
+            draw() {
+                ctx.fillStyle = state.theme === 'light' ? CONFIG.colors.light.platform : CONFIG.colors.dark.platform;
+                // 绘制木纹效果
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + 5);
+                ctx.lineTo(this.x + this.width, this.y + 5);
+                ctx.stroke();
+            }
+        }
+
+        class Obstacle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 30;
+                this.height = 50;
+                this.markedForDeletion = false;
+            }
+
+            update() {
+                this.x -= CONFIG.speed;
+                if (this.x + this.width < 0) this.markedForDeletion = true;
+            }
+
+            draw() {
+                ctx.fillStyle = state.theme === 'light' ? CONFIG.colors.light.obstacle : CONFIG.colors.dark.obstacle;
+                // 绘制尖刺/路障
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + this.height);
+                ctx.lineTo(this.x + this.width / 2, this.y);
+                ctx.lineTo(this.x + this.width, this.y + this.height);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        class Coin {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = 15;
+                this.markedForDeletion = false;
+                this.bobAngle = 0;
+            }
+
+            update() {
+                this.x -= CONFIG.speed;
+                this.bobAngle += 0.1;
+                this.y += Math.sin(this.bobAngle) * 0.5; // 上下浮动
+                if (this.x + this.radius < 0) this.markedForDeletion = true;
+            }
+
+            draw() {
+                ctx.fillStyle = state.theme === 'light' ? CONFIG.colors.light.coin : CONFIG.colors.dark.coin;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                // 铜钱孔
+                ctx.fillStyle = state.theme === 'light' ? '#B8860B' : '#FFF';
+                ctx.fillRect(this.x - 4, this.y - 4, 8, 8);
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 2 - 1;
+                this.speedY = Math.random() * 2 - 1;
+                this.color = color;
+                this.life = 1.0;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.05;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        // --- 辅助函数 ---
+
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                state.entities.particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function checkCollision(rect1, rect2) {
+            return (
+                rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.y + rect1.height > rect2.y
+            );
+        }
+
+        function checkCircleCollision(rect, circle) {
+            let distX = Math.abs(circle.x - rect.x - rect.width / 2);
+            let distY = Math.abs(circle.y - rect.y - rect.height / 2);
+
+            if (distX > (rect.width / 2 + circle.radius)) { return false; }
+            if (distY > (rect.height / 2 + circle.radius)) { return false; }
+
+            if (distX <= (rect.width / 2)) { return true; } 
+            if (distY <= (rect.height / 2)) { return true; }
+
+            let dx = distX - rect.width / 2;
+            let dy = distY - rect.height / 2;
+            return (dx * dx + dy * dy <= (circle.radius * circle.radius));
+        }
+
+        // --- 游戏主循环 ---
+
+        function initGame() {
+            state.entities.player = new Player();
+            state.entities.platforms = [];
+            state.entities.obstacles = [];
+            state.entities.coins = [];
+            state.entities.particles = [];
+            state.score = 0;
+            state.frames = 0;
+            scoreEl.innerText = '0';
+            
+            // 初始平台
+            state.entities.platforms.push(new Platform(0, canvas.height - 50, canvas.width));
+        }
+
+        function gameOver() {
+            state.isPlaying = false;
+            if (state.score > state.highScore) {
+                state.highScore = state.score;
+                localStorage.setItem('mingGameHighScore', state.highScore);
+                highScoreEl.innerText = state.highScore;
+            }
+            menuModal.classList.remove('hidden');
+            menuModal.style.display = 'flex';
+            document.querySelector('#menuModal h1').innerText = "游戏结束";
+            document.querySelector('#menuModal p').innerText = `最终得分: ${state.score}`;
+            startBtn.innerHTML = '<i class="fas fa-redo mr-2"></i>再次挑战';
+        }
+
+        function animate() {
+            if (!state.isPlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            state.frames++;
+
+            // 1. 生成实体
+            if (state.frames % CONFIG.spawnRate === 0) {
+                // 随机生成平台高度
+                const heightVariation = Math.random() * 150;
+                const yPos = canvas.height - 50 - heightVariation;
+                const width = 100 + Math.random() * 200;
+                
+                // 确保平台不会太高导致跳不上去，也不会太低
+                const lastPlatform = state.entities.platforms[state.entities.platforms.length - 1];
+                let newX = canvas.width;
+                if (lastPlatform) {
+                    newX = lastPlatform.x + lastPlatform.width + 50 + Math.random() * 100;
+                }
+
+                state.entities.platforms.push(new Platform(newX, yPos, width));
+
+                // 在平台上生成障碍物或金币
+                if (Math.random() > 0.3) {
+                    const type = Math.random() > 0.5 ? 'obstacle' : 'coin';
+                    const objX = newX + width / 2;
+                    const objY = yPos - (type === 'obstacle' ? 50 : 60);
+                    
+                    if (type === 'obstacle') {
+                        state.entities.obstacles.push(new Obstacle(objX, yPos - 50));
+                    } else {
+                        state.entities.coins.push(new Coin(objX, yPos - 60));
+                    }
+                }
+            }
+
+            // 2. 更新与绘制平台
+            state.entities.platforms.forEach((p, index) => {
+                p.update();
+                p.draw();
+                
+                // 玩家与平台碰撞
+                const player = state.entities.player;
+                if (
+                    player.dy >= 0 && // 下落中
+                    player.x + player.width > p.x &&
+                    player.x < p.x + p.width &&
+                    player.y + player.height >= p.y &&
+                    player.y + player.height <= p.y + p.height + player.dy // 防止穿透
+                ) {
+                    player.y = p.y - player.height;
+                    player.dy = 0;
+                    player.onGround = true;
+                    player.rotation = 0;
+                }
+
+                if (p.markedForDeletion) state.entities.platforms.splice(index, 1);
+            });
+
+            // 3. 更新与绘制障碍物
+            state.entities.obstacles.forEach((obs, index) => {
+                obs.update();
+                obs.draw();
+                if (checkCollision(state.entities.player, obs)) {
+                    createParticles(state.entities.player.x, state.entities.player.y, 20, '#ff0000');
+                    gameOver();
+                }
+                if (obs.markedForDeletion) state.entities.obstacles.splice(index, 1);
+            });
+
+            // 4. 更新与绘制金币
+            state.entities.coins.forEach((coin, index) => {
+                coin.update();
+                coin.draw();
+                if (checkCircleCollision(state.entities.player, coin)) {
+                    state.score += 10;
+                    scoreEl.innerText = state.score;
+                    createParticles(coin.x, coin.y, 10, '#FFD700');
+                    state.entities.coins.splice(index, 1);
+                } else if (coin.markedForDeletion) {
+                    state.entities.coins.splice(index, 1);
+                }
+            });
+
+            // 5. 玩家
+            state.entities.player.update();
+            state.entities.player.draw();
+
+            // 6. 粒子
+            state.entities.particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                if (p.life <= 0) state.entities.particles.splice(index, 1);
+            });
+
+            // 7. 难度增加
+            if (state.frames % 500 === 0) {
+                CONFIG.speed += 0.5;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // --- 事件监听 ---
+
+        function handleInput(e) {
+            if ((e.code === 'Space' || e.type === 'touchstart' || e.type === 'mousedown') && state.isPlaying) {
+                state.entities.player.jump();
+                e.preventDefault(); // 防止滚动
+            }
+        }
+
+        window.addEventListener('keydown', handleInput);
+        canvas.addEventListener('mousedown', handleInput);
+        canvas.addEventListener('touchstart', handleInput, {passive: false});
+
+        startBtn.addEventListener('click', () => {
+            menuModal.style.display = 'none';
+            initGame();
+            state.isPlaying = true;
+            animate();
+        });
+
+        // --- 主题切换逻辑 ---
+
+        function applyTheme(theme) {
+            state.theme = theme;
+            document.body.className = theme === 'dark' ? 'dark-mode' : 'light-mode';
+            
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'dark') {
+                icon.className = 'fas fa-sun';
+                // 调整UI颜色以适应暗黑模式
+                document.querySelector('.score-board').style.backgroundColor = 'rgba(255,255,255,0.1)';
+                document.querySelector('.score-board').style.color = '#fff';
+            } else {
+                icon.className = 'fas fa-moon';
+                document.querySelector('.score-board').style.backgroundColor = 'rgba(0,0,0,0.6)';
+                document.querySelector('.score-board').style.color = '#fff';
+            }
+            
+            localStorage.setItem('theme', theme);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = state.theme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+        });
+
+        // 初始化主题
+        applyTheme(state.theme);
+        highScoreEl.innerText = state.highScore;
+
+        // 初始绘制一次背景
+        ctx.fillStyle = '#f4e4bc';
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+
+    </script>
+</body>
+</html>
