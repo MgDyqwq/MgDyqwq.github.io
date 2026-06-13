@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>明风书笺 · 大明共享写字板 | MingDynasty</title>
+
+<link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    
+  
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-main: #f8f3e6;
+            --bg-card: #fffaf0;
+            --text-color: #2c2416;
+            --border-color: #c9b89c;
+            --btn-bg: #8c3130;
+            --btn-text: #fff;
+            --input-bg: #ffffff;
+            --shadow: 0 2px 8px rgba(139, 117, 85, 0.25);
+        }
+        [data-theme="dark"] {
+            --bg-main: #241f1a;
+            --bg-card: #2d2721;
+            --text-color: #e6dcc8;
+            --border-color: #5c4f3e;
+            --btn-bg: #a84241;
+            --btn-text: #f8f3e6;
+            --input-bg: #383028;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        body {
+            font-family: "KaiTi", "STKaiti", SimSun, serif;
+            background-color: var(--bg-main);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: normal;
+            letter-spacing: 4px;
+            flex: 1;
+        }
+        #themeToggle {
+            padding: 6px 14px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .operate-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        #noteId {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: inherit;
+            outline: none;
+        }
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .status {
+            font-size: 14px;
+            margin-bottom: 12px;
+            opacity: 0.8;
+        }
+        #editor {
+            width: 100%;
+            min-height: 70vh;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-family: "KaiTi", "STKaiti", SimSun, serif;
+            font-size: 17px;
+            line-height: 2;
+            resize: none;
+            outline: none;
+        }
+        .tip {
+            margin-top: 15px;
+            font-size: 13px;
+            opacity: 0.7;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>明风书笺 · 共享写字板</h1>
+            <button id="themeToggle">切换明暗</button>
+        </div>
+
+        <div class="operate-bar">
+            <input type="text" id="noteId" placeholder="请输入笔记ID">
+            <button id="openBtn">打开笔记</button>
+            <button id="randomBtn">随机新建ID</button>
+        </div>
+
+        <div class="status" id="status">请输入ID或新建笔记</div>
+        <textarea id="editor" placeholder="提笔书写，内容自动同步，多人可共同编辑..."></textarea>
+        <div class="tip">© 2013-2026 MingDynasty,Inc. 明风便签 | 离线本地缓存 | 联网自动云端同步 | 支持无限多独立笔记</div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://cnpsroesjlfkarulwfdh.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucHNyb2Vzamxma2FydWx3ZmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDI5MjEsImV4cCI6MjA5NjkxODkyMX0.4pxDqp0Yz0PQwT9rkti3TLejMoMamgMiCDI7zvQbm4g";
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const editor = document.getElementById('editor');
+        const noteIdInput = document.getElementById('noteId');
+        const openBtn = document.getElementById('openBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const statusEl = document.getElementById('status');
+        const themeToggle = document.getElementById('themeToggle');
+
+        let currentId = "";
+        let syncTimer = null;
+        let noteChannel = null;
+        const LOCAL_PREFIX = "ming_note_";
+
+        function initTheme() {
+            const localTheme = localStorage.getItem("ming_theme");
+            if(localTheme === "dark") {
+                document.documentElement.setAttribute("data-theme", "dark");
+            }
+        }
+        themeToggle.addEventListener("click", () => {
+            const isDark = document.documentElement.hasAttribute("data-theme");
+            if(isDark) {
+                document.documentElement.removeAttribute("data-theme");
+                localStorage.setItem("ming_theme", "light");
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("ming_theme", "dark");
+            }
+        });
+        initTheme();
+
+        function setStatus(text) {
+            statusEl.innerText = text;
+        }
+
+        function generateRandomId() {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let id = '';
+            for (let i = 0; i < 8; i++) {
+                id += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return id;
+        }
+
+        function saveLocal(id, content) {
+            localStorage.setItem(LOCAL_PREFIX + id, content);
+        }
+        function getLocal(id) {
+            return localStorage.getItem(LOCAL_PREFIX + id) || '';
+        }
+
+        async function loadNote(id) {
+            if (!id) return;
+            currentId = id;
+            noteIdInput.value = id;
+            setStatus("加载云端内容中...");
+            openBtn.disabled = true;
+            randomBtn.disabled = true;
+
+            if(noteChannel) supabase.removeChannel(noteChannel);
+
+            const { data, error } = await supabase
+                .from('notes')
+                .select('content')
+                .eq('id', id)
+                .single();
+
+            if (error) {
+                await supabase.from('notes').insert([{ id, content: "" }]);
+                editor.value = "";
+                saveLocal(id, "");
+                setStatus(`成功新建笔记，ID：${id}`);
+            } else {
+                editor.value = data.content;
+                saveLocal(id, data.content);
+                setStatus(`已加载笔记，ID：${id}，同步正常`);
+            }
+
+            noteChannel = supabase
+                .channel(`note_${id}`)
+                .on(
+                    'postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'notes', filter: `id=${id}` },
+                    (payload) => {
+                        editor.value = payload.new.content;
+                        saveLocal(id, payload.new.content);
+                        setStatus("检测到他人编辑，内容已更新");
+                    }
+                )
+                .subscribe();
+
+            openBtn.disabled = false;
+            randomBtn.disabled = false;
+        }
+
+        async function syncContent() {
+            if (!currentId) return;
+            const content = editor.value;
+            saveLocal(currentId, content);
+            setStatus("正在同步至云端...");
+
+            const { error } = await supabase
+                .from('notes')
+                .update({ content, updated_at: new Date() })
+                .eq('id', currentId);
+
+            if (error) {
+                setStatus("同步失败，请检查网络");
+            } else {
+                setStatus("同步成功");
+            }
+        }
+
+        function getUrlParam(name) {
+            const params = new URLSearchParams(location.search);
+            return params.get(name) || '';
+        }
+
+        window.addEventListener('load', () => {
+            const urlId = getUrlParam('id');
+            if (urlId) loadNote(urlId);
+        });
+
+        openBtn.addEventListener('click', () => {
+            const id = noteIdInput.value.trim();
+            if (id) loadNote(id);
+        });
+        randomBtn.addEventListener('click', () => {
+            const newId = generateRandomId();
+            history.replaceState({}, "", `?id=${newId}`);
+            loadNote(newId);
+        });
+
+        editor.addEventListener('input', () => {
+            if (!currentId) return;
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(syncContent, 400);
+        });
+    </script>
+</body>
+</html>
