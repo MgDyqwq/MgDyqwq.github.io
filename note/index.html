@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>明风书笺 · 大明共享写字板 | MingDynasty</title>
-
     <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -141,14 +140,16 @@
 
         <div class="status" id="status">请输入ID或新建笔记</div>
         <textarea id="editor" placeholder="提笔书写，内容自动同步，多人可共同编辑..."></textarea>
-        <div class="tip">© 2013-2026 MingDynasty,Inc. 明风便签 | 类note.ms</div>
+        <div class="tip">© 2013-2026 MingDynasty,Inc. 大明便签 | 离线本地缓存 | 联网自动云端同步 | 支持无限多独立笔记</div>
     </div>
 
     <script>
+        // Supabase 配置（仅声明一次）
         const SUPABASE_URL = "https://cnpsroesjlfkarulwfdh.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucHNyb2Vzamxma2FydWx3ZmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDI5MjEsImV4cCI6MjA5NjkxODkyMX0.4pxDqp0Yz0PQwT9rkti3TLejMoMamgMiCDI7zvQbm4g";
-
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // DOM 元素
         const editor = document.getElementById('editor');
         const noteIdInput = document.getElementById('noteId');
         const openBtn = document.getElementById('openBtn');
@@ -161,6 +162,7 @@
         let noteChannel = null;
         const LOCAL_PREFIX = "ming_note_";
 
+        // 主题切换
         function initTheme() {
             const localTheme = localStorage.getItem("ming_theme");
             if(localTheme === "dark") {
@@ -183,6 +185,7 @@
             statusEl.innerText = text;
         }
 
+        // 生成随机ID
         function generateRandomId() {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
             let id = '';
@@ -192,6 +195,7 @@
             return id;
         }
 
+        // 本地缓存
         function saveLocal(id, content) {
             localStorage.setItem(LOCAL_PREFIX + id, content);
         }
@@ -199,33 +203,34 @@
             return localStorage.getItem(LOCAL_PREFIX + id) || '';
         }
 
+        // 加载笔记（修复single()报错）
         async function loadNote(id) {
             if (!id) return;
             currentId = id;
             noteIdInput.value = id;
-            setStatus("加载云端内容中...");
+            setStatus("加载中...");
             openBtn.disabled = true;
             randomBtn.disabled = true;
 
             if(noteChannel) supabase.removeChannel(noteChannel);
 
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('notes')
                 .select('content')
-                .eq('id', id)
-                .single();
+                .eq('id', id);
 
-            if (error) {
+            if (data.length === 0) {
                 await supabase.from('notes').insert([{ id, content: "" }]);
                 editor.value = "";
                 saveLocal(id, "");
-                setStatus(`成功新建笔记，ID：${id}`);
+                setStatus(`新建笔记 ID：${id}`);
             } else {
-                editor.value = data.content;
-                saveLocal(id, data.content);
-                setStatus(`已加载笔记，ID：${id}，同步正常`);
+                editor.value = data[0].content;
+                saveLocal(id, data[0].content);
+                setStatus(`已打开笔记 ID：${id}`);
             }
 
+            // 实时监听
             noteChannel = supabase
                 .channel(`note_${id}`)
                 .on(
@@ -234,7 +239,7 @@
                     (payload) => {
                         editor.value = payload.new.content;
                         saveLocal(id, payload.new.content);
-                        setStatus("检测到他人编辑，内容已更新");
+                        setStatus("他人已更新内容");
                     }
                 )
                 .subscribe();
@@ -243,11 +248,12 @@
             randomBtn.disabled = false;
         }
 
+        // 同步内容
         async function syncContent() {
             if (!currentId) return;
             const content = editor.value;
             saveLocal(currentId, content);
-            setStatus("正在同步至云端...");
+            setStatus("同步中...");
 
             const { error } = await supabase
                 .from('notes')
@@ -255,25 +261,28 @@
                 .eq('id', currentId);
 
             if (error) {
-                setStatus("同步失败，请检查网络");
+                setStatus("同步失败");
             } else {
                 setStatus("同步成功");
             }
         }
 
+        // 获取URL参数
         function getUrlParam(name) {
             const params = new URLSearchParams(location.search);
             return params.get(name) || '';
         }
 
+        // 初始化
         window.addEventListener('load', () => {
             const urlId = getUrlParam('id');
             if (urlId) loadNote(urlId);
         });
 
+        // 按钮事件
         openBtn.addEventListener('click', () => {
             const id = noteIdInput.value.trim();
-            if (id) loadNote(id);
+            loadNote(id);
         });
         randomBtn.addEventListener('click', () => {
             const newId = generateRandomId();
@@ -281,6 +290,7 @@
             loadNote(newId);
         });
 
+        // 输入防抖同步
         editor.addEventListener('input', () => {
             if (!currentId) return;
             clearTimeout(syncTimer);
