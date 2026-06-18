@@ -6,6 +6,7 @@
     <title>明风书笺 · 大明共享写字板 | MingDynasty</title>
     <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
     
+    <!-- CDN会自动生成全局supabase对象，不要重复命名冲突 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -144,10 +145,10 @@
     </div>
 
     <script>
-        // Supabase 配置（仅声明一次）
+        // Supabase 配置：变量改名 sb，避免和CDN全局supabase冲突
         const SUPABASE_URL = "https://cnpsroesjlfkarulwfdh.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucHNyb2Vzamxma2FydWx3ZmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDI5MjEsImV4cCI6MjA5NjkxODkyMX0.4pxDqp0Yz0PQwT9rkti3TLejMoMamgMiCDI7zvQbm4g";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // DOM 元素
         const editor = document.getElementById('editor');
@@ -164,19 +165,28 @@
 
         // 主题切换
         function initTheme() {
-            const localTheme = localStorage.getItem("ming_theme");
-            if(localTheme === "dark") {
-                document.documentElement.setAttribute("data-theme", "dark");
+            try {
+                const localTheme = localStorage.getItem("ming_theme");
+                if(localTheme === "dark") {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                }
+            } catch (e) {
+                // 浏览器隐私模式拦截localStorage时静默容错
+                console.warn("本地存储被浏览器拦截，主题无法持久保存");
             }
         }
         themeToggle.addEventListener("click", () => {
             const isDark = document.documentElement.hasAttribute("data-theme");
-            if(isDark) {
-                document.documentElement.removeAttribute("data-theme");
-                localStorage.setItem("ming_theme", "light");
-            } else {
-                document.documentElement.setAttribute("data-theme", "dark");
-                localStorage.setItem("ming_theme", "dark");
+            try {
+                if(isDark) {
+                    document.documentElement.removeAttribute("data-theme");
+                    localStorage.setItem("ming_theme", "light");
+                } else {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                    localStorage.setItem("ming_theme", "dark");
+                }
+            } catch (e) {
+                // 存储拦截时仅切换页面主题，不持久化
             }
         });
         initTheme();
@@ -195,15 +205,24 @@
             return id;
         }
 
-        // 本地缓存
+        // 本地缓存（捕获存储拦截异常）
         function saveLocal(id, content) {
-            localStorage.setItem(LOCAL_PREFIX + id, content);
+            try {
+                localStorage.setItem(LOCAL_PREFIX + id, content);
+            } catch (err) {
+                console.warn("本地存储写入被拦截", err);
+            }
         }
         function getLocal(id) {
-            return localStorage.getItem(LOCAL_PREFIX + id) || '';
+            try {
+                return localStorage.getItem(LOCAL_PREFIX + id) || '';
+            } catch (err) {
+                console.warn("本地存储读取被拦截", err);
+                return '';
+            }
         }
 
-        // 加载笔记（修复single()报错）
+        // 加载笔记（完整异步容错，替换所有supabase为sb）
         async function loadNote(id) {
             if (!id) return;
             currentId = id;
@@ -212,37 +231,54 @@
             openBtn.disabled = true;
             randomBtn.disabled = true;
 
-            if(noteChannel) supabase.removeChannel(noteChannel);
-
-            const { data } = await supabase
-                .from('notes')
-                .select('content')
-                .eq('id', id);
-
-            if (data.length === 0) {
-                await supabase.from('notes').insert([{ id, content: "" }]);
-                editor.value = "";
-                saveLocal(id, "");
-                setStatus(`新建笔记 ID：${id}`);
-            } else {
-                editor.value = data[0].content;
-                saveLocal(id, data[0].content);
-                setStatus(`已打开笔记 ID：${id}`);
+            // 销毁上一个实时频道，避免多订阅冲突
+            if(noteChannel) {
+                sb.removeChannel(noteChannel);
+                noteChannel = null;
             }
 
-            // 实时监听
-            noteChannel = supabase
-                .channel(`note_${id}`)
-                .on(
-                    'postgres_changes',
-                    { event: 'UPDATE', schema: 'public', table: 'notes', filter: `id=${id}` },
-                    (payload) => {
-                        editor.value = payload.new.content;
-                        saveLocal(id, payload.new.content);
-                        setStatus("他人已更新内容");
-                    }
-                )
-                .subscribe();
+            try {
+                const { data, error } = await sb
+                    .from('notes')
+                    .select('content')
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                if (data.length === 0) {
+                    // 新建笔记补全updated_at字段
+                    await sb.from('notes').insert([{ 
+                        id, 
+                        content: "",
+                        updated_at: new Date()
+                    }]);
+                    editor.value = "";
+                    saveLocal(id, "");
+                    setStatus(`新建笔记 ID：${id}`);
+                } else {
+                    editor.value = data[0].content;
+                    saveLocal(id, data[0].content);
+                    setStatus(`已打开笔记 ID：${id}`);
+                }
+
+                // 实时监听频道
+                noteChannel = sb
+                    .channel(`note_${id}`)
+                    .on(
+                        'postgres_changes',
+                        { event: 'UPDATE', schema: 'public', table: 'notes', filter: `id=eq.${id}` },
+                        (payload) => {
+                            editor.value = payload.new.content;
+                            saveLocal(id, payload.new.content);
+                            setStatus("他人已更新内容");
+                        }
+                    )
+                    .subscribe();
+            } catch (err) {
+                setStatus(`加载失败：${err.message}`);
+                // 加载失败降级读取本地缓存
+                editor.value = getLocal(id);
+            }
 
             openBtn.disabled = false;
             randomBtn.disabled = false;
@@ -255,15 +291,16 @@
             saveLocal(currentId, content);
             setStatus("同步中...");
 
-            const { error } = await supabase
-                .from('notes')
-                .update({ content, updated_at: new Date() })
-                .eq('id', currentId);
+            try {
+                const { error } = await sb
+                    .from('notes')
+                    .update({ content, updated_at: new Date() })
+                    .eq('id', currentId);
 
-            if (error) {
-                setStatus("同步失败");
-            } else {
+                if (error) throw error;
                 setStatus("同步成功");
+            } catch (err) {
+                setStatus(`同步失败：${err.message}（已保存在本地）`);
             }
         }
 
@@ -273,7 +310,7 @@
             return params.get(name) || '';
         }
 
-        // 初始化
+        // 页面加载自动读取url?id
         window.addEventListener('load', () => {
             const urlId = getUrlParam('id');
             if (urlId) loadNote(urlId);
@@ -295,6 +332,11 @@
             if (!currentId) return;
             clearTimeout(syncTimer);
             syncTimer = setTimeout(syncContent, 400);
+        });
+
+        // 页面卸载销毁实时频道
+        window.addEventListener('beforeunload', () => {
+            if(noteChannel) sb.removeChannel(noteChannel);
         });
     </script>
 </body>
