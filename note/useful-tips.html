@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大明御制写字板 | MingDynasty</title>
+
+        <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        mingred: '#a8071a',
+                        mingdeepred: '#610310',
+                        minggold: '#d4af37',
+                        minglightgold: '#f0d890',
+                        mingjade: '#277c67',
+                        mingblue: '#1c4587',
+                        mingivory: '#fff9e8',
+                        mingpaper: '#f5efe0',
+                        mingblack: '#120a0a',
+                        mingcloud: '#e8e0d0'
+                    },
+                    fontFamily: {
+                        ming: ['"SimSun"', '"STSong"', '"KaiTi"', 'serif']
+                    },
+                    backgroundImage: {
+                        dragonBorder: "linear-gradient(135deg, #d4af37, #a8071a, #277c67, #1c4587, #d4af37)",
+                        royalGradient: "linear-gradient(to right, #a8071a, #d4af37)",
+                        darkRoyalGradient: "linear-gradient(to right, #1c4587, #d4af37)"
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-ming-pattern {
+                background-image: url('https://mgdyqwq.github.io/about/2.jfif');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }
+            .scroll-ming::-webkit-scrollbar {
+                width: 10px;
+            }
+            .scroll-ming::-webkit-scrollbar-track {
+                background: #2c1818;
+            }
+            .scroll-ming::-webkit-scrollbar-thumb {
+                background: linear-gradient(#d4af37, #a8071a);
+                border-radius: 5px;
+            }
+            .dragon-frame {
+                border: 3px solid transparent;
+                background-image: linear-gradient(#f5efe0, #120a0a), var(--tw-bg-opacity);
+                background-origin: border-box;
+                background-clip: padding-box, border-box;
+            }
+            .dragon-border-anim {
+                position: relative;
+                overflow: hidden;
+            }
+            .dragon-border-anim::before {
+                content: "";
+                position: absolute;
+                top: -100%;
+                left: -100%;
+                width: 300%;
+                height: 300%;
+                background: bg-dragonBorder;
+                animation: dragonRotate 8s linear infinite;
+                z-index: -1;
+            }
+            @keyframes dragonRotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .text-shadow-gold {
+                text-shadow: 0 0 10px rgba(212,175,55,0.7), 0 0 20px rgba(212,175,55,0.4);
+            }
+            .text-shadow-red {
+                text-shadow: 0 0 8px rgba(168,7,26,0.6);
+            }
+            .glass-ming {
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
+            .ornament-line {
+                height: 3px;
+                background: bg-royalGradient;
+                border-radius: 999px;
+            }
+            .dark .ornament-line {
+                background: bg-darkRoyalGradient;
+            }
+            .seal-btn {
+                position: relative;
+                overflow: hidden;
+            }
+            .seal-btn::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+                transition: left 0.6s;
+            }
+            .seal-btn:hover::after {
+                left: 100%;
+            }
+            .scroll-pattern {
+                background-image: repeating-linear-gradient(45deg, rgba(212,175,55,0.08) 0px, rgba(212,175,55,0.08) 2px, transparent 2px, transparent 12px);
+            }
+            .dark .scroll-pattern {
+                background-image: repeating-linear-gradient(45deg, rgba(212,175,55,0.06) 0px, rgba(212,175,55,0.06) 2px, transparent 2px, transparent 12px);
+            }
+        }
+    </style>
+</head>
+<body class="scroll-ming transition-colors duration-700 min-h-screen bg-ming-pattern font-ming">
+    <!-- 全局遮罩分层，提升古风层次感 -->
+    <div class="min-h-screen bg-gradient-to-b from-black/45 via-black/30 to-black/65 dark:from-mingblack/80 dark:via-mingblack/70 dark:to-mingblack/90 py-10 px-4 md:px-8">
+        <!-- 顶部导航 -->
+        <header class="max-w-5xl mx-auto flex justify-between items-center mb-12">
+            <a href="https://mingdynasty1.github.io" class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-minggold/70 glass-ming bg-mingivory/10 hover:bg-mingred/20 transition-all duration-300">
+                <i class="fa fa-reply-all text-xl text-minggold group-hover:text-minglightgold"></i>
+                <span class="text-lg md:text-xl text-minglightgold group-hover:text-white">返回大明皇城主站</span>
+            </a>
+            <button id="themeToggle" class="px-5 py-2 rounded-lg dragon-frame glass-ming bg-mingivory/10 transition-all hover:scale-105">
+                <i class="fa fa-moon-o dark:hidden mr-2 text-mingjade"></i>
+                <i class="fa fa-sun-o hidden dark:inline mr-2 text-minglightgold"></i>
+                <span class="dark:hidden text-mingjade">玄夜御境</span>
+                <span class="hidden dark:inline text-minglightgold">天光御殿</span>
+            </button>
+        </header>
+
+        <!-- 主卷轴面板 完整明朝龙纹鎏金边框 -->
+        <main class="max-w-5xl mx-auto dragon-border-anim rounded-xl p-[3px]">
+            <div class="w-full h-full rounded-xl glass-ming scroll-pattern bg-mingpaper/90 dark:bg-mingblack/90 p-8 md:p-12 shadow-2xl shadow-mingdeepred/30">
+                <!-- 顶部皇家纹饰标题区 -->
+                <div class="text-center mb-12 relative">
+                    <div class="flex items-center justify-center gap-4 mb-4">
+                        <span class="text-3xl text-minggold">❖ 龙凤呈祥 ❖</span>
+                    </div>
+                    <h1 class="text-[clamp(2rem,6vw,3rem)] text-mingred dark:text-minglightgold font-bold text-shadow-red dark:text-shadow-gold mb-4 tracking-widest">
+                        朕御敕 · 大明御制鎏金写字板
+                    </h1>
+                    <p class="text-gray-700 dark:text-mingcloud text-xl">
+                        普天臣民，持御赐文稿ID，方可入阁阅览御藏笔墨
+                    </p>
+                    <div class="ornament-line w-4/5 mx-auto mt-6"></div>
+                </div>
+
+                <!-- ID输入御赐文卷区域 -->
+                <section class="mb-14 p-6 rounded-lg border border-minggold/40 bg-mingivory/30 dark:bg-mingblue/20">
+                    <h2 class="text-2xl text-mingdeepred dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <i class="fa fa-yin-yang text-mingjade"></i>
+                        御赐文稿ID录入处
+                    </h2>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input 
+                            type="text" 
+                            id="noteId" 
+                            placeholder="恭请输入写字板御赐ID，示例：xxx"
+                            class="flex-1 px-5 py-4 rounded-lg border-2 border-minggold/70 bg-white/75 dark:bg-mingblack/60 dark:text-mingcloud text-lg focus:outline-none focus:ring-2 focus:ring-mingjade transition-all placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                        >
+                        <button 
+                            id="goBtn"
+                            class="seal-btn px-8 py-4 bg-mingred text-white rounded-lg font-bold text-lg hover:bg-mingdeepred dark:bg-mingjade dark:hover:bg-teal-700 transition-all min-w-[140px] shadow-lg shadow-mingred/40 dark:shadow-mingjade/30"
+                        >
+                            <i class="fa fa-arrow-circle-right mr-2"></i>奉旨阅览
+                        </button>
+                    </div>
+                    <p id="tipMsg" class="mt-3 text-mingred dark:text-red-400 text-base hidden">⚠ 请填写有效御赐ID，不可空白！</p>
+                </section>
+
+                <!-- 沿革史馆 -->
+                <section class="mb-12 p-6 rounded-lg border border-mingjade/40 bg-mingjade/10 dark:bg-mingjade/15">
+                    <h2 class="text-2xl text-mingblue dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <i class="fa fa-book text-mingred"></i>
+                        工部御造沿革史册
+                    </h2>
+                    <ul class="space-y-3 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingjade">
+                        <li class="text-lg">▫ 丙午年六月十二（2026.06.12）——工部立项，启造大明御制写字板工坊</li>
+                        <li class="text-lg">▫ 丙午年六月十七（2026.06.17）——钦天监勘校，修缮全坊疏漏Bug</li>
+                        <li class="text-lg">▫ 丙午年六月十八（2026.06.18）——御笔钦定竣工，颁行天下万民使用</li>
+                    </ul>
+                </section>
+
+                <!-- 朝堂律令 -->
+                <section class="mb-6 p-6 rounded-lg border border-mingred/40 bg-mingred/10 dark:bg-mingdeepred/20">
+                    <h2 class="text-2xl text-mingred dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <i class="fa fa-gavel text-minggold"></i>
+                        天下臣民恪守朝堂律令
+                    </h2>
+                    <ul class="space-y-4 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingred">
+                        <li class="text-lg">一、凡使用本御制写字板，须恪守当朝现行律法，禁撰违禁、祸乱社稷之文</li>
+                        <li class="text-lg">二、严禁私遣爬虫、暴力调用本坊Supabase御库API，违者革除使用权限，永不复用</li>
+                    </ul>
+                </section>
+            </div>
+        </main>
+
+        <!-- 底部御印版权 -->
+        <footer class="max-w-5xl mx-auto mt-12 text-center">
+            <div class="ornament-line w-full mb-6"></div>
+            <div class="p-4 glass-ming rounded-lg border border-minggold/30">
+                <p class="text-base md:text-lg text-gray-700 dark:text-mingcloud tracking-wide">
+                    © 2013-2026 MingDynasty,Inc. 大明写字板 | 💖Made By MingDynasty
+                </p>
+                <p class="mt-2 text-sm text-minggold dark:text-minglightgold">
+                    大明工部御造 · 鎏金龙纹御版
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 明暗模式本地持久存储
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('ming-theme');
+        if (savedTheme === 'dark') html.classList.add('dark');
+
+        toggleBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('ming-theme', currentTheme);
+        });
+
+        // ID跳转逻辑
+        const idInput = document.getElementById('noteId');
+        const goBtn = document.getElementById('goBtn');
+        const tipMsg = document.getElementById('tipMsg');
+
+        function jumpToNote() {
+            const inputVal = idInput.value.trim();
+            if (!inputVal) {
+                tipMsg.classList.remove('hidden');
+                return;
+            }
+            tipMsg.classList.add('hidden');
+            window.location.href = `https://mgdyqwq.github.io/note/?id=${inputVal}`;
+        }
+
+        goBtn.addEventListener('click', jumpToNote);
+        idInput.addEventListener('keydown', e => e.key === 'Enter' && jumpToNote());
+    </script>
+</body>
+</html>
