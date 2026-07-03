@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大明御制写字板 | MingDynasty</title>
 
-        <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
@@ -72,7 +72,7 @@
                 left: -100%;
                 width: 300%;
                 height: 300%;
-                background: bg-dragonBorder;
+                background: linear-gradient(135deg, #d4af37, #a8071a, #277c67, #1c4587, #d4af37);
                 animation: dragonRotate 8s linear infinite;
                 z-index: -1;
             }
@@ -92,11 +92,11 @@
             }
             .ornament-line {
                 height: 3px;
-                background: bg-royalGradient;
+                background: linear-gradient(to right, #a8071a, #d4af37);
                 border-radius: 999px;
             }
             .dark .ornament-line {
-                background: bg-darkRoyalGradient;
+                background: linear-gradient(to right, #1c4587, #d4af37);
             }
             .seal-btn {
                 position: relative;
@@ -121,6 +121,26 @@
             .dark .scroll-pattern {
                 background-image: repeating-linear-gradient(45deg, rgba(212,175,55,0.06) 0px, rgba(212,175,55,0.06) 2px, transparent 2px, transparent 12px);
             }
+            .code-block {
+                font-family: Consolas, monospace;
+                word-break: break-all;
+            }
+            .copy-tip {
+                animation: fadeTip 2s ease forwards;
+            }
+            @keyframes fadeTip {
+                0% { opacity: 1; }
+                80% { opacity: 1; }
+                100% { opacity: 0; visibility: hidden; }
+            }
+            .section-title-icon {
+                width: 36px;
+                height: 36px;
+                display: grid;
+                place-items: center;
+                border-radius: 50%;
+                border: 1px solid currentColor;
+            }
         }
     </style>
 </head>
@@ -128,7 +148,7 @@
     <!-- 全局遮罩分层，提升古风层次感 -->
     <div class="min-h-screen bg-gradient-to-b from-black/45 via-black/30 to-black/65 dark:from-mingblack/80 dark:via-mingblack/70 dark:to-mingblack/90 py-10 px-4 md:px-8">
         <!-- 顶部导航 -->
-        <header class="max-w-5xl mx-auto flex justify-between items-center mb-12">
+        <header class="max-w-5xl mx-auto flex justify-between items-center gap-4 mb-12">
             <a href="https://mingdynasty1.github.io" class="group flex items-center gap-3 px-4 py-2 rounded-lg border border-minggold/70 glass-ming bg-mingivory/10 hover:bg-mingred/20 transition-all duration-300">
                 <i class="fa fa-reply-all text-xl text-minggold group-hover:text-minglightgold"></i>
                 <span class="text-lg md:text-xl text-minglightgold group-hover:text-white">返回大明皇城主站</span>
@@ -156,19 +176,24 @@
                         普天臣民，持御赐文稿ID，方可入阁阅览御藏笔墨
                     </p>
                     <div class="ornament-line w-4/5 mx-auto mt-6"></div>
+                    <div class="flex justify-center mt-4 gap-6 text-minggold text-lg">
+                        <span>✦ 云端存稿 ✦</span>
+                        <span>✦ 明暗双御境 ✦</span>
+                        <span>✦ 永久留存文稿 ✦</span>
+                    </div>
                 </div>
 
                 <!-- ID输入御赐文卷区域 -->
                 <section class="mb-14 p-6 rounded-lg border border-minggold/40 bg-mingivory/30 dark:bg-mingblue/20">
                     <h2 class="text-2xl text-mingdeepred dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
-                        <i class="fa fa-yin-yang text-mingjade"></i>
+                        <span class="section-title-icon text-mingjade"><i class="fa fa-yin-yang"></i></span>
                         御赐文稿ID录入处
                     </h2>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <input 
                             type="text" 
                             id="noteId" 
-                            placeholder="恭请输入写字板御赐ID，示例：xxx"
+                            placeholder="恭请输入写字板御赐ID，示例：ming001"
                             class="flex-1 px-5 py-4 rounded-lg border-2 border-minggold/70 bg-white/75 dark:bg-mingblack/60 dark:text-mingcloud text-lg focus:outline-none focus:ring-2 focus:ring-mingjade transition-all placeholder:text-gray-500 dark:placeholder:text-gray-400"
                         >
                         <button 
@@ -179,30 +204,194 @@
                         </button>
                     </div>
                     <p id="tipMsg" class="mt-3 text-mingred dark:text-red-400 text-base hidden">⚠ 请填写有效御赐ID，不可空白！</p>
+                    <p class="mt-3 text-gray-600 dark:text-mingcloud">若无文稿ID，可直接前往写字板页面新建专属御制文稿，自动生成唯一ID留存。</p>
+                </section>
+
+                <!-- 板块1：御制写字板使用全教程 -->
+                <section class="mb-14 p-6 rounded-lg border border-mingjade/40 bg-mingjade/10 dark:bg-mingjade/15">
+                    <h2 class="text-2xl text-mingjade dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <span class="section-title-icon text-mingred"><i class="fa fa-pencil"></i></span>
+                        万民使用御版完整教程
+                    </h2>
+                    <div class="space-y-5 text-gray-800 dark:text-mingcloud text-lg">
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">一、新建空白御稿</h3>
+                            <ul class="pl-6 border-l-4 border-minggold space-y-2">
+                                <li>1. 直接访问写字板主页面，页面自动生成全新空白卷轴</li>
+                                <li>2. 在鎏金文稿框内自由书写文案、随笔、记事、诗文</li>
+                                <li>3. 支持长文本、分段换行，无文字篇幅强制限制</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">二、云端存档保存</h3>
+                            <ul class="pl-6 border-l-4 border-minggold space-y-2">
+                                <li>1. 书写完成后点击「御藏存档」按钮，文稿自动送入Supabase云端御库</li>
+                                <li>2. 系统即时生成唯一专属御赐ID，妥善保管方可再次调取文稿</li>
+                                <li>3. 每次修改文稿后重新存档，云端数据自动覆盖更新，留存最新笔墨</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">三、分享与调取文稿</h3>
+                            <ul class="pl-6 border-l-4 border-minggold space-y-2">
+                                <li>1. 将专属御赐ID发给亲友，对方在此页面输入ID即可阅览你的文稿</li>
+                                <li>2. 一人一ID，互不干扰，仅持有ID者可查看对应卷轴内容</li>
+                                <li>3. 复制带ID完整链接，可直接跳转阅览，无需手动输入ID</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">四、明暗御境切换</h3>
+                            <p>写字板内自带天光/玄夜双模式，匹配当前页面主题，护眼适配白日、夜间书写。</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 板块2：工部御造工艺详解 GitHub Pages + Supabase数据库 -->
+                <section class="mb-14 p-6 rounded-lg border border-mingblue/40 bg-mingblue/10 dark:bg-mingblue/20">
+                    <h2 class="text-2xl text-mingblue dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <span class="section-title-icon text-minggold"><i class="fa fa-cogs"></i></span>
+                        工部御造工艺详解（GitHub Pages + Supabase云端数据库）
+                    </h2>
+                    <div class="space-y-6 text-gray-800 dark:text-mingcloud text-lg">
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">一、整体架构总览</h3>
+                            <p>本御制写字板采用纯静态前端+云端数据库分离架构，无需自建服务器：GitHub Pages永久免费托管全部页面、样式、交互代码；Supabase云端数据库承载所有万民文稿数据，通过官方安全API完成数据交互，轻量化、稳定、免运维。</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">二、前端部署工序（GitHub Pages）</h3>
+                            <ul class="space-y-2 pl-6 border-l-4 border-minggold">
+                                <li>1. 注册GitHub账号，创建公开静态仓库，上传所有HTML、CSS、JS静态资源</li>
+                                <li>2. 仓库设置开启Pages服务，部署分支选择main，站点根目录直接发布</li>
+                                <li>3. 系统自动生成公开访问域名，全球均可访问，无流量、时长限制</li>
+                                <li>4. 修改页面代码后提交推送，1-3分钟自动更新线上全部卷轴页面</li>
+                                <li>5. 支持自定义域名绑定，替换默认GitHub二级域名，彰显专属御坊</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">三、后端云端存储（Supabase数据库）</h3>
+                            <ul class="space-y-2 pl-6 border-l-4 border-mingjade">
+                                <li>1. 注册Supabase云端平台，新建独立项目，获取项目专属URL与匿名访问密钥</li>
+                                <li>2. 创建核心数据表notes，存储全部臣民御稿，字段规范如下：</li>
+                                <div class="p-4 rounded bg-mingblack/10 dark:bg-black/40 code-block my-3 text-base">
+                                    id（文本，唯一主键）<br>
+                                    content（长文本，存储用户书写全文）<br>
+                                    create_at（时间戳，文稿初次创建时辰）<br>
+                                    update_at（时间戳，文稿最后修改时辰）
+                                </div>
+                                <li>3. 配置数据表行安全策略，限制非法跨表读取、批量爬取数据，保护万民文稿隐私</li>
+                                <li>4. 前端引入Supabase官方JS SDK，封装新增、查询、更新三类核心接口</li>
+                                <li>5. 免费版提供充足存储空间与请求额度，满足日常大量臣民使用需求</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">四、页面联动完整逻辑</h3>
+                            <p>1. 用户在本页面输入御赐ID，点击「奉旨阅览」携带ID跳转写字板页面；<br>
+                            2. 写字板页面加载完成后，自动调用Supabase查询接口，匹配数据表内对应id；<br>
+                            3. 匹配成功则将云端文稿载入卷轴编辑框，可直接修改、重新存档；<br>
+                            4. 无匹配ID则清空编辑框，提供空白卷轴供新建文稿，存档后生成全新ID。</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-mingred dark:text-minglightgold mb-2">五、双架构优势说明</h3>
+                            <ul class="pl-6 border-l-4 border-minggold space-y-2">
+                                <li>• 零服务器成本，GitHub Pages与Supabase免费额度足够长期使用</li>
+                                <li>• 静态页面加载速度快，无后端渲染延迟，卷轴动画流畅不卡顿</li>
+                                <li>• 文稿云端永久存储，清除浏览器缓存、更换设备均可凭ID找回笔墨</li>
+                                <li>• 前后端分离，修改页面样式无需改动数据库，维护简易</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 板块3：御版特色功能介绍 -->
+                <section class="mb-14 p-6 rounded-lg border border-minggold/40 bg-mingivory/20 dark:bg-minggold/10">
+                    <h2 class="text-2xl text-mingdeepred dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <span class="section-title-icon text-mingblue"><i class="fa fa-star"></i></span>
+                        大明御制写字板专属特色
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6 text-lg text-gray-800 dark:text-mingcloud">
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-cloud mr-2"></i>云端永久存稿</h3>
+                            <p>文稿不绑定设备，凭ID跨手机、电脑调取，数据存入专业云端数据库，不易丢失。</p>
+                        </div>
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-adjust mr-2"></i>双御境护眼模式</h3>
+                            <p>全局天光/玄夜主题同步，写字板页面跟随切换配色，昼夜书写皆舒适。</p>
+                        </div>
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-file-text mr-2"></i>无上限文本卷轴</h3>
+                            <p>不限制文字长度，长篇诗文、日记、记事均可完整收录，自由分段排版。</p>
+                        </div>
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-link mr-2"></i>便捷分享机制</h3>
+                            <p>独立唯一文稿ID，支持纯ID输入、带参链接两种分享方式，传阅简单。</p>
+                        </div>
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-paint-brush mr-2"></i>纯正大明古风界面</h3>
+                            <p>宣纸底色、鎏金龙纹边框、宋体明朝字体、传统卷轴纹样，复刻宫廷御笔书写氛围。</p>
+                        </div>
+                        <div class="p-4 rounded bg-white/40 dark:bg-mingblack/30">
+                            <h3 class="font-bold text-minggold mb-2"><i class="fa fa-bolt mr-2"></i>极速加载无卡顿</h3>
+                            <p>GitHub Pages静态分发，页面打开迅速，动画、交互无延迟，低配设备亦可流畅运行。</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 板块4：答疑阁 常见问题 -->
+                <section class="mb-14 p-6 rounded-lg border border-mingblue/40 bg-mingblue/10 dark:bg-mingblue/15">
+                    <h2 class="text-2xl text-mingblue dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
+                        <span class="section-title-icon text-mingjade"><i class="fa fa-question-circle"></i></span>
+                        御书房答疑阁（FAQ）
+                    </h2>
+                    <div class="space-y-5 text-lg text-gray-800 dark:text-mingcloud">
+                        <div>
+                            <h3 class="font-bold text-mingred dark:text-minglightgold">Q1：御赐文稿ID遗忘，如何找回？</h3>
+                            <p>A：当前暂无账号绑定功能，建议自行记录ID至备忘录、记事本，妥善留存；后续工部或将增设本地缓存记录功能。</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-mingred dark:text-minglightgold">Q2：文稿是否会被他人随意查看？</h3>
+                            <p>A：仅持有对应ID者可阅览文稿，无ID无法调取，他人无法批量遍历所有用户文稿，隐私安全有保障。</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-mingred dark:text-minglightgold">Q3：云端文稿是否会定期清除？</h3>
+                            <p>A：正常合规文稿永久留存，仅违规违禁内容会被工部后台清除并回收使用权限。</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-mingred dark:text-minglightgold">Q4：能否离线书写文稿？</h3>
+                            <p>A：离线可书写，但无法存档至云端；联网后点击存档方可生成ID、永久保存。</p>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-mingred dark:text-minglightgold">Q5：频繁大量调用API会有何限制？</h3>
+                            <p>A：免费Supabase存在每日请求上限，恶意爬虫、高频批量请求将触发访问限制，遵循朝堂律令正常使用无影响。</p>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- 沿革史馆 -->
                 <section class="mb-12 p-6 rounded-lg border border-mingjade/40 bg-mingjade/10 dark:bg-mingjade/15">
                     <h2 class="text-2xl text-mingblue dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
-                        <i class="fa fa-book text-mingred"></i>
+                        <span class="section-title-icon text-mingred"><i class="fa fa-book"></i></span>
                         工部御造沿革史册
                     </h2>
-                    <ul class="space-y-3 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingjade">
-                        <li class="text-lg">▫ 丙午年六月十二（2026.06.12）——工部立项，启造大明御制写字板工坊</li>
-                        <li class="text-lg">▫ 丙午年六月十七（2026.06.17）——钦天监勘校，修缮全坊疏漏Bug</li>
-                        <li class="text-lg">▫ 丙午年六月十八（2026.06.18）——御笔钦定竣工，颁行天下万民使用</li>
+                    <ul class="space-y-3 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingjade text-lg">
+                        <li>▫ 丙午年六月十二（2026.06.12）——工部立项，启造大明御制写字板工坊，敲定GitHub Pages+Supabase整体架构</li>
+                        <li>▫ 丙午年六月十四（2026.06.14）——完成古风页面设计、龙纹动画、明暗双主题样式开发</li>
+                        <li>▫ 丙午年六月十六（2026.06.16）——对接Supabase数据库，调试文稿读写、ID匹配交互接口</li>
+                        <li>▫ 丙午年六月十七（2026.06.17）——钦天监勘校，修缮全坊疏漏Bug，优化移动端适配、加载速度</li>
+                        <li>▫ 丙午年六月十八（2026.06.18）——御笔钦定竣工，颁行天下万民免费使用</li>
+                        <li>▫ 丙午年六月廿三（2026.06.23）——增补工艺教程、使用说明、答疑阁，完善引导页面</li>
                     </ul>
                 </section>
 
                 <!-- 朝堂律令 -->
                 <section class="mb-6 p-6 rounded-lg border border-mingred/40 bg-mingred/10 dark:bg-mingdeepred/20">
                     <h2 class="text-2xl text-mingred dark:text-minglightgold mb-5 font-bold flex items-center gap-3">
-                        <i class="fa fa-gavel text-minggold"></i>
+                        <span class="section-title-icon text-minggold"><i class="fa fa-gavel"></i></span>
                         天下臣民恪守朝堂律令
                     </h2>
-                    <ul class="space-y-4 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingred">
-                        <li class="text-lg">一、凡使用本御制写字板，须恪守当朝现行律法，禁撰违禁、祸乱社稷之文</li>
-                        <li class="text-lg">二、严禁私遣爬虫、暴力调用本坊Supabase御库API，违者革除使用权限，永不复用</li>
+                    <ul class="space-y-4 text-gray-800 dark:text-mingcloud pl-6 border-l-4 border-mingred text-lg">
+                        <li>一、凡使用本御制写字板，须恪守当朝现行法律法规，禁撰涉政、暴力、色情、造谣、祸乱社稷之违禁文辞。</li>
+                        <li>二、严禁私遣爬虫、脚本批量遍历、暴力请求本坊Supabase御库API，高频恶意调用者革除使用权限，永不复用。</li>
+                        <li>三、禁止利用本写字板存储、传播他人隐私、侵权文案、盗版内容，违者文稿统一销毁并限制访问。</li>
+                        <li>四、工部保留随时更新律令、优化平台功能、清理违规文稿的全部权限，臣民当主动遵从各项新规。</li>
                     </ul>
                 </section>
             </div>
@@ -216,7 +405,10 @@
                     © 2013-2026 MingDynasty,Inc. 大明写字板 | 💖Made By MingDynasty
                 </p>
                 <p class="mt-2 text-sm text-minggold dark:text-minglightgold">
-                    大明工部御造 · 鎏金龙纹御版
+                    大明工部御造 · 鎏金龙纹御版 · 静态云端双架构
+                </p>
+                <p class="mt-2 text-xs text-gray-600 dark:text-mingcloud">
+                    本平台基于GitHub Pages静态托管 + Supabase云端数据库独立搭建，免费开放于民使用
                 </p>
             </div>
         </footer>
