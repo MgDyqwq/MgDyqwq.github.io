@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大明过山车 | MingDynasty</title>
+   <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "SimSun", "宋体", serif; }
+        body { background: #000; overflow: hidden; }
+        canvas { display: block; margin: auto; }
+        #ui {
+            position: fixed; top: 10px; right: 10px; color: #fff; font-size: 22px;
+            text-shadow: 2px 2px 4px #000; background: rgba(120,30,0,0.6);
+            padding: 8px 16px; border: 2px solid #d4af37; border-radius: 6px;
+        }
+        #tip {
+            position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+            color: #ffdd99; font-size: 16px; text-shadow: 1px 1px 3px #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+        车速：<span id="speedText">0</span> 里/时<br>
+        里程：<span id="distText">0</span> 里
+    </div>
+    <div id="tip">W/↑ 加速 | S/↓ 减速 | 速度不足上坡会溜车倒退</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const speedText = document.getElementById('speedText');
+        const distText = document.getElementById('distText');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const GAME = {
+            speed: 35, maxSafeSpeed: 78, gravity: 0.3, friction: 0.08,
+            dist: 0, stationInterval: 1200, nextStation: 1200,
+            dayNightTimer: 0, dayDuration: 1200, isDay: true,
+            flipOver: false, flipAngle: 0,
+            minClimbSpeed: 28, // 最低爬坡速度，低于此上坡溜车
+            perspective: 0.72, // 透视缩放系数，实现立体感
+            horizonY: canvas.height * 0.42 // 透视地平线
+        };
+
+        const keys = { w: false, s: false, up: false, down: false };
+        window.addEventListener('keydown', e => {
+            const k = e.key.toLowerCase();
+            if(k === 'w') keys.w = true;
+            if(k === 's') keys.s = true;
+            if(e.key === 'ArrowUp') keys.up = true;
+            if(e.key === 'ArrowDown') keys.down = true;
+        });
+        window.addEventListener('keyup', e => {
+            const k = e.key.toLowerCase();
+            if(k === 'w') keys.w = false;
+            if(k === 's') keys.s = false;
+            if(e.key === 'ArrowUp') keys.up = false;
+            if(e.key === 'ArrowDown') keys.down = false;
+        });
+
+        // 无限轨道数据
+        const trackPoints = [];
+        const segmentLength = 80;
+        for(let i=0; i<140; i++){
+            trackPoints.push(genTrackPoint(i * segmentLength));
+        }
+        function genTrackPoint(distance){
+            const baseY = canvas.height * 0.58;
+            const wave1 = Math.sin(distance / 320) * 130;
+            const wave2 = Math.cos(distance / 180) * 75;
+            const wave3 = Math.sin(distance / 90) * 45;
+            const y = baseY + wave1 + wave2 + wave3;
+            return { dist: distance, y: y };
+        }
+
+        function updateTrack(){
+            const last = trackPoints[trackPoints.length - 1];
+            while(last.dist - GAME.dist < canvas.width / GAME.perspective + 1000){
+                const newDist = last.dist + segmentLength;
+                trackPoints.push(genTrackPoint(newDist));
+                last.dist = newDist;
+            }
+            while(trackPoints[0].dist < GAME.dist - canvas.width / GAME.perspective - 400){
+                trackPoints.shift();
+            }
+        }
+
+        function getTrackPos(offset){
+            const currentDist = GAME.dist + offset;
+            let low = 0, high = trackPoints.length -1;
+            while(low < high){
+                const mid = (low + high +1) >>1;
+                if(trackPoints[mid].dist <= currentDist) low = mid;
+                else high = mid -1;
+            }
+            const p0 = trackPoints[low];
+            const p1 = trackPoints[Math.min(low+1, trackPoints.length-1)];
+            const t = (currentDist - p0.dist) / (p1.dist - p0.dist);
+            const y = p0.y * (1-t) + p1.y * t;
+            const dy = p1.y - p0.y;
+            const slope = dy / segmentLength;
+            return { y, slope };
+        }
+
+        // 透视转换函数：距离转屏幕3D坐标，近大远小
+        function getScreenPos(distOffset, rawY){
+            const camDist = distOffset;
+            const scale = Math.max(0.18, 1 / (1 + Math.abs(camDist) * GAME.perspective / 600));
+            const screenX = canvas.width * 0.35 + camDist * scale;
+            const screenY = GAME.horizonY + (rawY - GAME.horizonY) * scale;
+            return { x: screenX, y: screenY, scale };
+        }
+
+        // 绘制3D立体轨道（分层侧轨实现厚度）
+        function drawTrack(){
+            ctx.lineCap = 'round';
+            // 由远及近绘制，保证遮挡正确
+            for(let i = trackPoints.length - 2; i >= 0; i--){
+                const p0 = trackPoints[i];
+                const p1 = trackPoints[i+1];
+                const off0 = p0.dist - GAME.dist;
+                const off1 = p1.dist - GAME.dist;
+                const sp0 = getScreenPos(off0, p0.y);
+                const sp1 = getScreenPos(off1, p1.y);
+                const wid0 = 16 * sp0.scale;
+                const wid1 = 16 * sp1.scale;
+
+                // 轨道侧面厚度 立体阴影
+                ctx.beginPath();
+                ctx.fillStyle = '#5c3020';
+                ctx.moveTo(sp0.x - wid0, sp0.y);
+                ctx.lineTo(sp1.x - wid1, sp1.y);
+                ctx.lineTo(sp1.x - wid1, sp1.y + wid1 * 1.2);
+                ctx.lineTo(sp0.x - wid0, sp0.y + wid0 * 1.2);
+                ctx.closePath();
+                ctx.fill();
+
+                // 主轨道红木
+                ctx.beginPath();
+                ctx.strokeStyle = '#8c3c23';
+                ctx.lineWidth = wid0;
+                ctx.moveTo(sp0.x, sp0.y);
+                ctx.lineTo(sp1.x, sp1.y);
+                ctx.stroke();
+
+                // 金边
+                ctx.beginPath();
+                ctx.strokeStyle = '#d4af37';
+                ctx.lineWidth = Math.max(1.5, sp0.scale * 3);
+                ctx.moveTo(sp0.x, sp0.y);
+                ctx.lineTo(sp1.x, sp1.y);
+                ctx.stroke();
+
+                // 枕木立体
+                ctx.fillStyle = '#482816';
+                const step = 35;
+                for(let s=0; s < segmentLength; s += step){
+                    const t = s / segmentLength;
+                    const off = off0 * (1-t) + off1 * t;
+                    const y = p0.y*(1-t)+p1.y*t;
+                    const sp = getScreenPos(off, y);
+                    const w = 24 * sp.scale;
+                    ctx.fillRect(sp.x - w/2, sp.y + sp.scale *4, w, sp.scale * 10);
+                }
+            }
+        }
+
+        // 3D立体明代驿站站台
+        function drawStation(){
+            const stationDist = GAME.nextStation;
+            const off = stationDist - GAME.dist;
+            const sp = getScreenPos(off, getTrackPos(off).y);
+            if(sp.x < -150 || sp.x > canvas.width + 150) return;
+            const s = sp.scale;
+
+            // 站台平台立体
+            ctx.fillStyle = '#8a5c32';
+            ctx.fillRect(sp.x - 90*s, sp.y -90*s, 180*s, 90*s);
+            ctx.fillStyle = '#603810';
+            ctx.fillRect(sp.x -90*s, sp.y, 180*s, 25*s);
+
+            // 重檐屋顶立体
+            ctx.fillStyle = '#7a1818';
+            ctx.beginPath();
+            ctx.moveTo(sp.x -100*s, sp.y -90*s);
+            ctx.lineTo(sp.x, sp.y -150*s);
+            ctx.lineTo(sp.x +100*s, sp.y -90*s);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 2*s;
+            ctx.stroke();
+
+            // 牌匾
+            ctx.fillStyle = '#d4af37';
+            ctx.fillRect(sp.x -55*s, sp.y -115*s, 110*s, 32*s);
+            ctx.fillStyle = '#600808';
+            ctx.font = `${24*s}px SimSun`;
+            ctx.textAlign = 'center';
+            ctx.fillText('驿站站台', sp.x, sp.y -92*s);
+        }
+
+        // 3D明朝文官过山车车厢
+        function drawCar(){
+            const track = getTrackPos(0);
+            const sp = getScreenPos(0, track.y);
+            const carX = sp.x;
+            const carY = sp.y - 32 * sp.scale;
+            const tiltAngle = Math.atan(track.slope * 0.9);
+            const s = sp.scale;
+
+            ctx.save();
+            ctx.translate(carX, carY);
+            let rotate = tiltAngle;
+            if(GAME.flipOver){
+                GAME.flipAngle += 0.08;
+                rotate += GAME.flipAngle;
+            }
+            ctx.rotate(rotate);
+
+            // 车厢立体侧面阴影
+            ctx.fillStyle = '#1c1c1c';
+            ctx.fillRect(-36*s, -24*s, 72*s, 48*s);
+            // 主体车厢
+            ctx.fillStyle = '#2c2c2c';
+            ctx.fillRect(-32*s, -22*s, 64*s, 44*s);
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 2*s;
+            ctx.strokeRect(-32*s, -22*s, 64*s, 44*s);
+
+            // 官帽车顶
+            ctx.fillStyle = '#121212';
+            ctx.beginPath();
+            ctx.moveTo(-38*s, -22*s);
+            ctx.lineTo(0, -42*s);
+            ctx.lineTo(38*s, -22*s);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#c9a030';
+            ctx.stroke();
+
+            // 文官人脸
+            ctx.fillStyle = '#f0e6d2';
+            ctx.beginPath();
+            ctx.arc(0, -12*s, 11*s, 0, Math.PI*2);
+            ctx.fill();
+            // 乌纱帽
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(-16*s, -24*s, 32*s, 7*s);
+            ctx.fillRect(-24*s, -20*s, 8*s, 4*s);
+            ctx.fillRect(16*s, -20*s, 8*s, 4*s);
+            // 绯色官袍
+            ctx.fillStyle = '#991616';
+            ctx.fillRect(-18*s, 0, 36*s, 22*s);
+
+            // 立体车轮
+            ctx.fillStyle = '#0a0a0a';
+            ctx.beginPath(); ctx.arc(-22*s, 22*s, 10*s, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(22*s, 22*s, 10*s, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#d4af37';
+            ctx.lineWidth = 2*s;
+            ctx.beginPath(); ctx.arc(-22*s, 22*s, 10*s, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(22*s, 22*s, 10*s, 0, Math.PI*2); ctx.stroke();
+
+            ctx.restore();
+        }
+
+        // 昼夜天空+远景立体山峦
+        function drawSky(){
+            GAME.dayNightTimer++;
+            const dayRatio = Math.sin(GAME.dayNightTimer / GAME.dayDuration * Math.PI * 2) * 0.5 + 0.5;
+            GAME.isDay = dayRatio > 0.5;
+            const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+            if(GAME.isDay){
+                grad.addColorStop(0, `rgba(120, 180, 255, ${dayRatio})`);
+                grad.addColorStop(1, `rgba(210, 230, 255, ${dayRatio})`);
+            }else{
+                grad.addColorStop(0, `rgba(10,10,40, ${1-dayRatio})`);
+                grad.addColorStop(1, `rgba(30,20,60, ${1-dayRatio})`);
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+
+            // 星空
+            if(!GAME.isDay){
+                ctx.fillStyle = '#fff';
+                for(let i=0; i<90; i++){
+                    const sx = (i * 137 + GAME.dist * 0.04) % canvas.width;
+                    const sy = (i * 91) % (canvas.height * 0.4);
+                    const size = (i % 3) + 1;
+                    ctx.fillRect(sx, sy, size, size);
+                }
+            }
+
+            // 多层远山营造立体纵深
+            // 远景淡山
+            ctx.fillStyle = GAME.isDay ? 'rgba(110,150,110,0.3)' : 'rgba(15,30,25,0.5)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for(let x=0; x<=canvas.width; x+=70){
+                const h = Math.sin((x + GAME.dist*0.15)/250) * 70 + GAME.horizonY;
+                ctx.lineTo(x, h);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            // 近景深色山
+            ctx.fillStyle = GAME.isDay ? 'rgba(90,130,90,0.45)' : 'rgba(25,45,35,0.7)';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for(let x=0; x<=canvas.width; x+=50){
+                const h = Math.sin((x + GAME.dist*0.25)/200) * 110 + canvas.height * 0.7;
+                ctx.lineTo(x, h);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // 物理更新：新增低速上坡溜车逻辑
+        function updatePhysics(){
+            const track = getTrackPos(0);
+            const slope = track.slope;
+            const accel = 0.45;
+
+            // 玩家加减速
+            if(keys.w || keys.up) GAME.speed += accel;
+            if(keys.s || keys.down) GAME.speed -= accel;
+
+            // 基础摩擦
+            GAME.speed *= (1 - GAME.friction);
+
+            // =========核心新增：速度不足无法上坡，会倒退溜车=========
+            if(slope < -0.02){ // 上坡（轨道向上倾斜，斜率为负）
+                if(GAME.speed < GAME.minClimbSpeed){
+                    // 动力不足，重力强制下滑减速甚至倒退
+                    GAME.speed += slope * GAME.gravity * 1.8;
+                }else{
+                    // 速度足够正常爬坡
+                    GAME.speed += slope * GAME.gravity;
+                }
+            }else{
+                // 下坡/平路正常重力
+                GAME.speed += slope * GAME.gravity;
+            }
+
+            // 最低速度保护，防止无限倒退卡死
+
+            // 更新里程
+            GAME.dist += GAME.speed;
+            speedText.textContent = Math.floor(GAME.speed);
+            distText.textContent = Math.floor(GAME.dist);
+
+            // 站台刷新
+            if(GAME.dist > GAME.nextStation){
+                GAME.nextStation += GAME.stationInterval;
+            }
+
+            // 超速翻车
+            if(GAME.speed > GAME.maxSafeSpeed){
+                GAME.flipOver = true;
+            }else{
+                GAME.flipOver = false;
+                GAME.flipAngle = 0;
+            }
+        }
+
+        function loop(){
+            updateTrack();
+            updatePhysics();
+            drawSky();
+            drawTrack();
+            drawStation();
+            drawCar();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    </script>
+</body>
+</html>
