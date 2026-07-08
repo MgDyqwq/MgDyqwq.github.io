@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大明监察 | MingDynasty</title>
+  <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    
+    <script>
+        if(localStorage.getItem('theme') === 'dark'){
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #f8f3e6;
+            --bg-card: #fffbf0;
+            --text-main: #2c1810;
+            --text-secondary: #5c3c2e;
+            --border-color: #b88646;
+            --accent: #941b0c;
+            --accent-light: #c44030;
+            --shadow: rgba(139,90,43,0.15);
+            --scroll-bg: #e9dfcc;
+            --stamp-red: #a81010;
+            --table-stripe: rgba(184,134,70,0.08);
+        }
+        [data-theme="dark"] {
+            --bg-main: #1a1410;
+            --bg-card: #29201b;
+            --text-main: #e8e0d0;
+            --text-secondary: #b8a898;
+            --border-color: #704828;
+            --accent: #e04230;
+            --accent-light: #ff6050;
+            --shadow: rgba(0,0,0,0.45);
+            --scroll-bg: #332820;
+            --stamp-red: #d62828;
+            --table-stripe: rgba(100,60,30,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "SimSun", "STSong", "KaiTi", serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            /* 明代官服云纹暗纹背景 */
+            background-image: url("data:image/svg+xml,%3Csvg width='140' height='140' viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 10 C50 30,90 30,110 10 M10 40 C30 60,110 60,130 40 M30 130 C50 110,90 110,110 130 M10 100 C30 80,110 80,130 100' stroke='%23b88646' stroke-width='0.6' fill='none' opacity='0.06'/%3E%3Ccircle cx='70' cy='70' r='6' fill='%23b88646' opacity='0.04'/%3E%3C/svg%3E");
+            line-height: 1.85;
+            transition: all 0.4s ease;
+            padding-bottom: 80px;
+        }
+        /* 顶部导航栏 */
+        .header-bar {
+            width: 100%;
+            padding: 18px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px double var(--border-color);
+            background-color: var(--bg-card);
+            box-shadow: 0 3px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .header-title {
+            font-size: 26px;
+            letter-spacing: 8px;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .theme-btn {
+            padding: 9px 18px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            border-radius: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 15px;
+            transition: 0.3s;
+            letter-spacing: 1px;
+        }
+        .theme-btn:hover {
+            background-color: var(--border-color);
+            color: var(--bg-main);
+        }
+        /* 主容器 */
+        .container {
+            max-width: 1180px;
+            margin: 48px auto;
+            padding: 0 24px;
+        }
+        .frame-card {
+            border: 4px solid var(--border-color);
+            padding: 40px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            box-shadow: 0 8px 20px var(--shadow);
+            position: relative;
+        }
+        .frame-card::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px dashed var(--border-color);
+            pointer-events: none;
+        }
+        /* 印章标题 */
+        .stamp-title {
+            position: relative;
+            text-align: center;
+        }
+        .main-title {
+            font-size: 36px;
+            margin-bottom: 14px;
+            letter-spacing: 10px;
+            color: var(--accent);
+        }
+        .stamp {
+            position: absolute;
+            right: 60px;
+            top: -10px;
+            width: 90px;
+            height: 90px;
+            border: 3px solid var(--stamp-red);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--stamp-red);
+            font-size: 12px;
+            letter-spacing: 2px;
+            transform: rotate(12deg);
+            opacity: 0.85;
+        }
+        .sub-title {
+            text-align: center;
+            font-size: 17px;
+            color: var(--text-secondary);
+            margin-bottom: 42px;
+            letter-spacing: 3px;
+        }
+        .divider {
+            width: 220px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 30px auto;
+            position: relative;
+        }
+        .divider::before {
+            content: "◆ ◆ ◆";
+            position: absolute;
+            left: 50%;
+            top: -12px;
+            transform: translateX(-50%);
+            color: var(--border-color);
+            letter-spacing: 8px;
+        }
+        h2 {
+            font-size: 24px;
+            margin: 40px 0 18px;
+            padding-left: 14px;
+            border-left: 5px solid var(--accent);
+            letter-spacing: 4px;
+        }
+        h3 {
+            font-size: 20px;
+            margin: 24px 0 12px;
+            color: var(--accent-light);
+            letter-spacing: 2px;
+        }
+        h4 {
+            font-size: 17px;
+            margin: 18px 0 8px;
+            color: var(--text-main);
+        }
+        p {
+            margin-bottom: 16px;
+            text-indent: 2em;
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        ul, ol {
+            padding-left: 3.2em;
+            margin-bottom: 18px;
+            color: var(--text-secondary);
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        /* 六科网格卡片 */
+        .grid-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 22px;
+            margin: 28px 0;
+        }
+        .official-card {
+            border: 1px solid var(--border-color);
+            padding: 22px;
+            background: rgba(184,134,70,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s;
+        }
+        [data-theme="dark"] .official-card {
+            background: rgba(184,134,70,0.09);
+        }
+        .official-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 14px var(--shadow);
+        }
+        /* 层级结构图 */
+        .tree-map {
+            border: 1px solid var(--border-color);
+            padding: 26px;
+            margin: 30px 0;
+            background: rgba(148,27,12,0.04);
+            text-align: center;
+            line-height: 2.2;
+        }
+        .tree-line {
+            color: var(--accent);
+            font-size: 17px;
+            letter-spacing: 2px;
+        }
+        /* 品级表格 */
+        .rank-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        .rank-table th, .rank-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        .rank-table th {
+            background: var(--accent);
+            color: #fff;
+            letter-spacing: 2px;
+        }
+        .rank-table tr:nth-child(even) {
+            background: var(--table-stripe);
+        }
+        /* 宪纲摘抄框 */
+        .quote-box {
+            border-left: 5px solid var(--accent);
+            padding: 20px 24px;
+            margin: 26px 0;
+            background: rgba(184,134,70,0.06);
+        }
+        .quote-title {
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .quote-text {
+            font-style: italic;
+            font-size: 15px;
+        }
+        /* 底部落款印章区 */
+        .footer-wrap {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            position: relative;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 15px;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+        }
+        .footer-seal {
+            width: 70px;
+            height: 70px;
+            border: 2px solid var(--stamp-red);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--stamp-red);
+            font-size: 10px;
+            margin: 16px auto 0;
+            transform: rotate(-8deg);
+        }
+        .footer-link {
+            display: block;
+            text-align: center;
+            margin: 12px 0;
+            font-size: 15px;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        .copyright-text {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 9px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scroll-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-bar">
+        <div class="header-title">大明典章 · 监察志</div>
+        <button class="theme-btn" id="toggleTheme">切换明暗模式</button>
+    </header>
+
+    <main class="container">
+        <div class="frame-card">
+            <div class="stamp-title">
+                <h1 class="main-title">明代监察制度全览</h1>
+                <div class="stamp">大明宪纲</div>
+            </div>
+            <div class="divider"></div>
+            <p class="sub-title">都察院 · 六科给事中 · 十三道御史 · 厂卫监察体系｜品级·职权·利弊全考</p>
+
+            <h2>一、制度起源与立国监察宗旨</h2>
+            <p>明太祖朱元璋亲历元朝末年官吏贪腐、监察体系形同虚设，遂废除元代御史台，重构一套垂直独立、层层制衡的监察网络。洪武十五年正式设立都察院，辅以六科给事中独立谏察，辅以地方按察司、巡按御史，形成“中央总领、六科分察、地方巡督、特务辅监”多重监督架构。</p>
+            <p>明代监察核心治国思路为“以卑察尊、以小制大”：监察官员品级普遍低微，却拥有直接面圣弹劾、封驳诏旨、巡狩天下的重权，用以制衡一品高官、地方封疆大吏，防止权臣、藩镇、地方官员专权乱政。</p>
+
+            <div class="quote-box">
+                <div class="quote-title">《大明宪纲》摘抄</div>
+                <p class="quote-text">凡百官奸邪、小人构党、作威福乱政者，劾；百官贪冒坏官纪者，劾；学术不正、上书陈言变乱成宪希进用者，劾。凡朝会纠仪，祭祀监礼。凡政事得失，军民利病，皆得直言无避。</p>
+            </div>
+
+            <h2>二、明代监察体系层级结构图</h2>
+            <div class="tree-map">
+                <div class="tree-line">【皇帝】总控全部监察权力</div>
+                <div class="tree-line">├─ 文官法定监察系统</div>
+                <div class="tree-line">│　├─ 中央：都察院（都御史、十三道监察御史）</div>
+                <div class="tree-line">│　├─ 中央独立谏察：六科给事中（吏户礼兵刑工对口监察）</div>
+                <div class="tree-line">│　└─ 地方：提刑按察司、巡按御史、巡抚/总督（带宪衔）</div>
+                <div class="tree-line">└─ 特务特殊监察系统（非常规）</div>
+                <div class="tree-line">　　├─ 锦衣卫（皇帝亲军，诏狱缉查）</div>
+                <div class="tree-line">　　├─ 东厂（宦官掌，监视百官、锦衣卫）</div>
+                <div class="tree-line">　　└─ 西厂/内行厂（短期增设，监察范围更广）</div>
+            </div>
+
+            <h2>三、中央核心监察机构：都察院</h2>
+            <h3>1. 都察院长官品级与职权对照表</h3>
+            <table class="rank-table">
+                <tr>
+                    <th>官职名称</th>
+                    <th>品级</th>
+                    <th>核心职权</th>
+                </tr>
+                <tr>
+                    <td>左、右都御史</td>
+                    <td>正二品</td>
+                    <td>总领全院监察，弹劾文武重臣，参与三法司会审</td>
+                </tr>
+                <tr>
+                    <td>左、右副都御史</td>
+                    <td>正三品</td>
+                    <td>协助都御史管理院务，外派巡抚标配衔</td>
+                </tr>
+                <tr>
+                    <td>左、右佥都御史</td>
+                    <td>正四品</td>
+                    <td>巡查地方、总督军务多带此衔</td>
+                </tr>
+                <tr>
+                    <td>十三道监察御史</td>
+                    <td>正七品</td>
+                    <td>巡按各省、监军、监考、巡查盐漕茶马</td>
+                </tr>
+            </table>
+
+            <h3>2. 十三道监察御史核心权责</h3>
+            <p>明朝全国划分为十三布政使司，对应设立十三道御史，额定一百一十余人，虽仅七品，却拥有“代天子巡狩”的无上权威，地方三司官员见巡按需行跪拜礼。</p>
+            <ol>
+                <li>在京监察：巡查六部、大理寺、国子监、光禄寺等中央衙门，核查官员出勤、履职；</li>
+                <li>巡按地方：一年一换，核查府县钱粮、刑狱、仓储，平反冤狱，考核地方官吏；</li>
+                <li>军务监察：随军监军，核查军功，杜绝克扣军饷、武将虚报战功；</li>
+                <li>专项巡查：盐务、漕运、河道、茶马、科举考场专项监察；</li>
+                <li>朝廷大典纠仪：朝会、祭祀时弹劾失仪文武官员。</li>
+            </ol>
+
+            <h2>四、独立谏察体系：六科给事中（封驳之权）</h2>
+            <p>六科不隶属于都察院，直接对接皇帝，是明代独有的“谏官+监察官”合一制度，专门对口监督六部行政，拥有独有的封驳大权，可驳回皇帝不妥诏令、驳回六部违制奏章。</p>
+            <div class="grid-box">
+                <div class="official-card">
+                    <h3>吏科给事中</h3>
+                    <p>监察吏部官员任免、大计考核，封驳官员升迁文书，查处贪腐、庸碌官员，杜绝结党营私。</p>
+                </div>
+                <div class="official-card">
+                    <h3>户科给事中</h3>
+                    <p>监督国库钱粮、全国税收、漕运、盐引、国库出纳，核对年度财政账目，防止户部官员中饱私囊。</p>
+                </div>
+                <div class="official-card">
+                    <h3>礼科给事中</h3>
+                    <p>监察皇家祭祀、科举会试殿试、藩王朝贡、外交礼仪，弹劾礼制失范、科考舞弊官员。</p>
+                </div>
+                <div class="official-card">
+                    <h3>兵科给事中</h3>
+                    <p>监督武将升迁、兵籍造册、边防粮草、兵器制造，监察边将兵权，防止武将拥兵自重。</p>
+                </div>
+                <div class="official-card">
+                    <h3>刑科给事中</h3>
+                    <p>复核刑部、大理寺案件，监督三法司会审，重审死刑囚犯，平反冤狱，防止刑讯枉法。</p>
+                </div>
+                <div class="official-card">
+                    <h3>工科给事中</h3>
+                    <p>监察河道水利、皇家工程、军工建造，核查工程经费物料，杜绝工部官员虚报工程款贪污。</p>
+                </div>
+            </div>
+            <h4>六科品级补充</h4>
+            <p>六科掌科给事中为正七品，左右给事中从七品，普通给事中从七品，品级低微却可直接封还圣旨，制衡六部尚书二品高官，是明代分权制衡的关键设计。</p>
+
+            <h2>五、地方三层监察体系</h2>
+            <h3>1. 提刑按察使司（省级常设监察）</h3>
+            <ul>
+                <li>长官：按察使，正三品；副使、佥事分巡各道；</li>
+                <li>权责：一省刑狱、官吏监察、驿站、屯田、盐法；</li>
+                <li>局限：受制于地方督抚，独立性弱于中央派遣巡按御史。</li>
+            </ul>
+            <h3>2. 巡按御史（中央垂直下派）</h3>
+            <p>由十三道御史轮换外派，一年一任，不受地方三司管辖，可直接向皇帝密奏，拥有裁撤府县小官、提审重犯的权力，是牵制地方最重要力量。</p>
+            <h3>3. 巡抚、总督（带宪衔监察）</h3>
+            <p>中后期因地方多事设立，巡抚多带副都御史衔，总督多带佥都御史/都御史衔，节制一省或数省军政，兼具监察地方百官之权，属于中央派出的高级监察军政长官。</p>
+
+            <h2>六、特殊特务监察：厂卫体系</h2>
+            <p>厂卫不属于法定文官监察体系，是皇帝私人特务监察力量，不受大明律、三法司约束，监察范围覆盖百官、百姓、甚至宗室宦官，是明代监察制度的特殊延伸。</p>
+            <table class="rank-table">
+                <tr>
+                    <th>机构</th>
+                    <th>设立时期</th>
+                    <th>主管人员</th>
+                    <th>监察特点</th>
+                </tr>
+                <tr>
+                    <td>锦衣卫</td>
+                    <td>洪武十五年</td>
+                    <td>武将指挥使</td>
+                    <td>掌侍卫、缉捕、诏狱，监视文武百官私下言行</td>
+                </tr>
+                <tr>
+                    <td>东厂</td>
+                    <td>永乐十八年</td>
+                    <td>司礼监太监</td>
+                    <td>权力高于锦衣卫，监察百官同时监视锦衣卫</td>
+                </tr>
+                <tr>
+                    <td>西厂</td>
+                    <td>成化、正德两朝短期设立</td>
+                    <td>宦官掌厂</td>
+                    <td>监察覆盖全国百姓，抓捕范围无限制</td>
+                </tr>
+                <tr>
+                    <td>内行厂</td>
+                    <td>正德刘瑾专权时期</td>
+                    <td>刘瑾直管</td>
+                    <td>监察东厂、锦衣卫，刑罚最为严苛</td>
+                </tr>
+            </table>
+            <p>厂卫可不经司法流程直接抓捕、关押、审讯官员，私设诏狱滥用酷刑，中后期严重破坏明代法制，激化朝堂矛盾。</p>
+
+            <h2>七、明代监察制度历史优势</h2>
+            <ul>
+                <li>多层交叉监督：都察院、六科、按察司、巡按多重制衡，单一监察机构难以独大；</li>
+                <li>低品督高官制度：七品御史、给事中可弹劾二品尚书、一品公侯，削弱权臣势力；</li>
+                <li>封驳谏议制度：六科约束皇权与六部行政，减少政令失误；</li>
+                <li>垂直外派监察：巡按御史直属于中央，规避地方官官相护；</li>
+                <li>监察覆盖全面：行政、财政、司法、军务、工程、科举全部纳入监督范围。</li>
+            </ul>
+
+            <h2>八、明代监察制度固有弊端与灭亡诱因</h2>
+            <ul>
+                <li>中后期党争严重：御史、给事中分化为东林、阉党、浙党，监察权沦为党争攻伐工具；</li>
+                <li>厂卫特务监察失控：宦官借厂卫打压文官集团，法制崩坏，人心惶惶；</li>
+                <li>巡按权力过度膨胀：部分巡按借巡查之名勒索地方府县，滋生新腐败；</li>
+                <li>俸禄微薄监察官员易腐化：明代御史俸禄极低，后期大量接受地方馈赠；</li>
+                <li>明末财政崩溃：朝廷无力维持巡按、监察体系运转，监督机制彻底失效；</li>
+                <li>皇权过度干预：皇帝无视宪纲，随意贬谪正直监察官，监察失去独立底线。</li>
+            </ul>
+
+            <h2>九、后世史学评价</h2>
+            <p>明代监察体系是中国古代封建王朝监察制度发展的顶峰，其分层制衡、垂直外派、谏察合一的设计被后世清王朝大量继承改良。在明前期洪武、永乐、仁宣三朝，监察体系有效遏制官吏贪腐，稳定地方吏治；但自明中期起，缺乏有效约束的特务机构、朝堂党争、皇权滥用逐步摧毁这套精密制度，最终成为王朝覆灭重要诱因之一。</p>
+
+            <div class="footer-wrap">
+                <div class="footer-note">
+                    大明律·宪纲典章｜明代监察体系古风演示页面<br>
+                    史料参考：《明史·职官志》《大明会典·都察院》《宪纲事类》
+                </div>
+                <div class="footer-seal">大明官制</div>
+                <!-- 新增大明历史外链 -->
+                <a class="footer-link" href="https://mingdynasty1.github.io/MgDyhistory.html" target="_blank">前往查阅完整大明历史</a>
+                <!-- 新增版权文字 -->
+                <div class="copyright-text">© 2013-2026 MingDynasty,Inc. 大明监察</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 明暗切换本地存储持久化
+        const toggleBtn = document.getElementById('toggleTheme');
+        const html = document.documentElement;
+
+        toggleBtn.addEventListener('click', () => {
+            if(html.getAttribute('data-theme') === 'dark'){
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        })
+    </script>
+</body>
+</html>
