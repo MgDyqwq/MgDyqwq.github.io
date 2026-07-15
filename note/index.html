@@ -6,7 +6,6 @@
     <title>明风书笺 · 大明共享写字板 | MingDynasty</title>
     <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
     
-    <!-- CDN会自动生成全局supabase对象，不要重复命名冲突 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -134,7 +133,7 @@
         </div>
 
         <div class="operate-bar">
-            <input type="text" id="noteId" placeholder="请输入笔记ID">
+            <input type="text" id="noteId" placeholder="请输入笔记ID（仅字母数字）">
             <button id="openBtn">打开笔记</button>
             <button id="randomBtn">随机新建ID</button>
         </div>
@@ -145,10 +144,53 @@
     </div>
 
     <script>
-        // Supabase 配置：变量改名 sb，避免和CDN全局supabase冲突
-        const SUPABASE_URL = "https://cnpsroesjlfkarulwfdh.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucHNyb2Vzamxma2FydWx3ZmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDI5MjEsImV4cCI6MjA5NjkxODkyMX0.4pxDqp0Yz0PQwT9rkti3TLejMoMamgMiCDI7zvQbm4g";
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ====================== 安全配置区分环境 ======================
+        // 【重要】生产环境禁止直接写死密钥，建议改用后端接口中转
+        const ENV_CONFIG = {
+            // 开发环境临时使用，上线必须移除硬编码，改用后端代理
+            dev: {
+                supabaseUrl: "https://cnpsroesjlfkarulwfdh.supabase.co",
+                supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNucHNyb2Vzamxma2FydWx3ZmRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDI5MjEsImV4cCI6MjA5NjkxODkyMX0.4pxDqp0Yz0PQwT9rkti3TLejMoMamgMiCDI7zvQbm4g"
+            },
+            prod: {
+                // 生产环境置空，由后端接口动态下发，前端不存储密钥
+                supabaseUrl: "",
+                supabaseAnonKey: ""
+            }
+        };
+
+        // 判断运行环境，线上环境禁用本地密钥
+        const IS_PROD = window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
+        const env = IS_PROD ? ENV_CONFIG.prod : ENV_CONFIG.dev;
+
+        let sb = null;
+        // 生产环境必须从后端获取密钥，否则禁止数据库操作
+        async function initSupabaseClient() {
+            if (IS_PROD) {
+                try {
+                    // 示例：请求后端接口获取密钥，后端做鉴权，密钥不暴露前端
+                    const res = await fetch("/api/get-supabase-secret", {
+                        method: "GET",
+                        credentials: "same-origin"
+                    });
+                    const cfg = await res.json();
+                    env.supabaseUrl = cfg.url;
+                    env.supabaseAnonKey = cfg.anonKey;
+                } catch (e) {
+                    setStatus("安全初始化失败，仅本地模式可用");
+                    return false;
+                }
+            }
+            // 初始化客户端
+            sb = supabase.createClient(env.supabaseUrl, env.supabaseAnonKey, {
+                realtime: {
+                    params: {
+                        eventsPerSecond: 10 // 限制实时订阅频率，防刷库
+                    }
+                }
+            });
+            return true;
+        }
 
         // DOM 元素
         const editor = document.getElementById('editor');
@@ -162,6 +204,48 @@
         let syncTimer = null;
         let noteChannel = null;
         const LOCAL_PREFIX = "ming_note_";
+        const SYNC_DELAY = 600; // 延长防抖，减少数据库请求
+        const MAX_CONTENT_LENGTH = 50000; // 限制单篇笔记最大长度，防超大文本攻击
+
+        // ====================== 安全工具函数 ======================
+        // 1. ID 白名单校验：仅允许小写字母+数字，拦截特殊字符注入
+        function validateNoteId(id) {
+            return /^[a-z0-9]{8}$/.test(id);
+        }
+
+        // 2. XSS 内容过滤，转义危险标签
+        function safeFilterContent(text) {
+            if (!text) return "";
+            // 过滤 script、iframe、onxxx 事件
+            return text
+                .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+                .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "")
+                .replace(/on\w+="[^"]*"/gi, "")
+                .slice(0, MAX_CONTENT_LENGTH);
+        }
+
+        // 3. 错误脱敏：隐藏数据库原始报错，避免泄露库结构
+        function safeErrorMsg(rawErr) {
+            if (!rawErr?.message) return "网络请求异常";
+            const msg = rawErr.message.toLowerCase();
+            // 区分业务错误和数据库底层错误
+            if (msg.includes("auth") || msg.includes("key") || msg.includes("permission")) {
+                return "数据库权限受限，仅本地保存内容";
+            } else if (msg.includes("network") || msg.includes("fetch")) {
+                return "网络连接失败，已缓存本地";
+            } else if (msg.includes("rate limit")) {
+                return "请求过于频繁，请稍后重试";
+            }
+            return "同步异常，内容已保存在本地";
+        }
+
+        // 4. 销毁实时频道兜底，防止非法监听
+        function destroyRealtimeChannel() {
+            if (noteChannel && sb) {
+                sb.removeChannel(noteChannel);
+                noteChannel = null;
+            }
+        }
 
         // 主题切换
         function initTheme() {
@@ -171,7 +255,6 @@
                     document.documentElement.setAttribute("data-theme", "dark");
                 }
             } catch (e) {
-                // 浏览器隐私模式拦截localStorage时静默容错
                 console.warn("本地存储被浏览器拦截，主题无法持久保存");
             }
         }
@@ -185,9 +268,7 @@
                     document.documentElement.setAttribute("data-theme", "dark");
                     localStorage.setItem("ming_theme", "dark");
                 }
-            } catch (e) {
-                // 存储拦截时仅切换页面主题，不持久化
-            }
+            } catch (e) {}
         });
         initTheme();
 
@@ -195,7 +276,7 @@
             statusEl.innerText = text;
         }
 
-        // 生成随机ID
+        // 生成随机ID（固定8位纯小写字母数字，符合校验规则）
         function generateRandomId() {
             const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
             let id = '';
@@ -208,7 +289,8 @@
         // 本地缓存（捕获存储拦截异常）
         function saveLocal(id, content) {
             try {
-                localStorage.setItem(LOCAL_PREFIX + id, content);
+                const safeText = safeFilterContent(content);
+                localStorage.setItem(LOCAL_PREFIX + id, safeText);
             } catch (err) {
                 console.warn("本地存储写入被拦截", err);
             }
@@ -222,19 +304,31 @@
             }
         }
 
-        // 加载笔记（完整异步容错，替换所有supabase为sb）
+        // 加载笔记（增加ID校验、内容过滤、异常脱敏）
         async function loadNote(id) {
             if (!id) return;
+            // ID 安全校验
+            if (!validateNoteId(id)) {
+                setStatus("ID格式错误，仅支持8位小写字母数字");
+                return;
+            }
+
             currentId = id;
             noteIdInput.value = id;
             setStatus("加载中...");
             openBtn.disabled = true;
             randomBtn.disabled = true;
 
-            // 销毁上一个实时频道，避免多订阅冲突
-            if(noteChannel) {
-                sb.removeChannel(noteChannel);
-                noteChannel = null;
+            // 销毁旧频道
+            destroyRealtimeChannel();
+
+            // 未初始化客户端直接走本地模式
+            if (!sb) {
+                editor.value = getLocal(id);
+                setStatus("云端未初始化，仅读取本地缓存");
+                openBtn.disabled = false;
+                randomBtn.disabled = false;
+                return;
             }
 
             try {
@@ -246,7 +340,7 @@
                 if (error) throw error;
 
                 if (data.length === 0) {
-                    // 新建笔记补全updated_at字段
+                    // 新建笔记
                     await sb.from('notes').insert([{ 
                         id, 
                         content: "",
@@ -256,26 +350,40 @@
                     saveLocal(id, "");
                     setStatus(`新建笔记 ID：${id}`);
                 } else {
-                    editor.value = data[0].content;
-                    saveLocal(id, data[0].content);
+                    const safeText = safeFilterContent(data[0].content);
+                    editor.value = safeText;
+                    saveLocal(id, safeText);
                     setStatus(`已打开笔记 ID：${id}`);
                 }
 
-                // 实时监听频道
+                // 安全订阅实时更新
                 noteChannel = sb
-                    .channel(`note_${id}`)
+                    .channel(`note_${id}`, {
+                        config: { broadcast: { self: false } } // 不接收自己的广播
+                    })
                     .on(
                         'postgres_changes',
-                        { event: 'UPDATE', schema: 'public', table: 'notes', filter: `id=eq.${id}` },
+                        { 
+                            event: 'UPDATE', 
+                            schema: 'public', 
+                            table: 'notes', 
+                            filter: `id=eq.${id}` 
+                        },
                         (payload) => {
-                            editor.value = payload.new.content;
-                            saveLocal(id, payload.new.content);
+                            const safeText = safeFilterContent(payload.new.content);
+                            editor.value = safeText;
+                            saveLocal(id, safeText);
                             setStatus("他人已更新内容");
                         }
                     )
-                    .subscribe();
+                    .subscribe((status) => {
+                        if (status === 'CHANNEL_ERROR') {
+                            setStatus("实时同步通道异常");
+                            destroyRealtimeChannel();
+                        }
+                    });
             } catch (err) {
-                setStatus(`加载失败：${err.message}`);
+                setStatus(safeErrorMsg(err));
                 // 加载失败降级读取本地缓存
                 editor.value = getLocal(id);
             }
@@ -284,41 +392,48 @@
             randomBtn.disabled = false;
         }
 
-        // 同步内容
+        // 同步内容（内容过滤、限流、脱敏报错）
         async function syncContent() {
-            if (!currentId) return;
-            const content = editor.value;
-            saveLocal(currentId, content);
+            if (!currentId || !sb) return;
+            const rawContent = editor.value;
+            const safeContent = safeFilterContent(rawContent);
+            saveLocal(currentId, safeContent);
             setStatus("同步中...");
 
             try {
                 const { error } = await sb
                     .from('notes')
-                    .update({ content, updated_at: new Date() })
+                    .update({ 
+                        content: safeContent, 
+                        updated_at: new Date() 
+                    })
                     .eq('id', currentId);
 
                 if (error) throw error;
                 setStatus("同步成功");
             } catch (err) {
-                setStatus(`同步失败：${err.message}（已保存在本地）`);
+                setStatus(safeErrorMsg(err));
             }
         }
 
-        // 获取URL参数
+        // 获取URL参数（过滤非法ID）
         function getUrlParam(name) {
             const params = new URLSearchParams(location.search);
-            return params.get(name) || '';
+            const val = params.get(name) || '';
+            return validateNoteId(val) ? val : '';
         }
 
-        // 页面加载自动读取url?id
-        window.addEventListener('load', () => {
+        // 页面加载初始化
+        window.addEventListener('load', async () => {
+            // 初始化Supabase客户端
+            await initSupabaseClient();
             const urlId = getUrlParam('id');
             if (urlId) loadNote(urlId);
         });
 
         // 按钮事件
         openBtn.addEventListener('click', () => {
-            const id = noteIdInput.value.trim();
+            const id = noteIdInput.value.trim().toLowerCase();
             loadNote(id);
         });
         randomBtn.addEventListener('click', () => {
@@ -331,12 +446,17 @@
         editor.addEventListener('input', () => {
             if (!currentId) return;
             clearTimeout(syncTimer);
-            syncTimer = setTimeout(syncContent, 400);
+            syncTimer = setTimeout(syncContent, SYNC_DELAY);
         });
 
-        // 页面卸载销毁实时频道
+        // 页面卸载销毁频道
         window.addEventListener('beforeunload', () => {
-            if(noteChannel) sb.removeChannel(noteChannel);
+            destroyRealtimeChannel();
+        });
+
+        // 页面隐藏时断开实时连接，减少API消耗
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) destroyRealtimeChannel();
         });
     </script>
 </body>
