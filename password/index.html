@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>密码强弱判断 | MingDynasty</title>
+     <link rel="icon" href="https://MingDynasty1.github.io/000000000000000000.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== CSS 变量 ===== */
+        :root {
+            --bg-page: #f5efe6;
+            --bg-card: #fcf9f2;
+            --border-color: #b8a48a;
+            --border-light: #d4c8b8;
+            --text-primary: #3d2c1b;
+            --text-secondary: #6b5a48;
+            --text-muted: #9a8a7a;
+            --accent-red: #9b1b1b;
+            --accent-gold: #b8943c;
+            --accent-gold-light: #d4b86a;
+            --accent-red-dark: #7a1515;
+            --shadow: rgba(80, 50, 30, 0.15);
+            --input-bg: #fdfbf7;
+            --input-border: #c4b4a0;
+            --weak-color: #b33a3a;
+            --medium-color: #c9942a;
+            --strong-color: #3a8a5a;
+            --divider-color: #d4c8b8;
+            --scrollbar-track: #ede6db;
+            --scrollbar-thumb: #b8a48a;
+            --badge-bg: #ede6db;
+            --check-color: #3a8a5a;
+            --cross-color: #b33a3a;
+            --toggle-bg: #d4c8b8;
+            --toggle-dot: #fcf9f2;
+            --toggle-active: #9b1b1b;
+            --strength-bg: #ede6db;
+            --strength-fill: #9b1b1b;
+            --icon-filter: none;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #1a1410;
+            --bg-card: #26201a;
+            --border-color: #5a4a3a;
+            --border-light: #3d3228;
+            --text-primary: #e8ddd0;
+            --text-secondary: #b8aa9a;
+            --text-muted: #7a6a5a;
+            --accent-red: #b83a3a;
+            --accent-gold: #c9a84c;
+            --accent-gold-light: #a88a3a;
+            --accent-red-dark: #8a2a2a;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --input-bg: #2a241e;
+            --input-border: #4a3d30;
+            --weak-color: #cc5555;
+            --medium-color: #dbaa3a;
+            --strong-color: #4a9a6a;
+            --divider-color: #3d3228;
+            --scrollbar-track: #2a241e;
+            --scrollbar-thumb: #4a3d30;
+            --badge-bg: #3d3228;
+            --check-color: #4a9a6a;
+            --cross-color: #cc5555;
+            --toggle-bg: #4a3d30;
+            --toggle-dot: #26201a;
+            --toggle-active: #b83a3a;
+            --strength-bg: #3d3228;
+            --strength-fill: #b83a3a;
+            --icon-filter: brightness(0.8) invert(0.9);
+        }
+
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', '华文楷体', 'KaiTi', serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.5s ease, color 0.5s ease;
+            scroll-behavior: smooth;
+        }
+
+        /* ===== 滚动条 ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 8px;
+        }
+
+        /* ===== 主卡片 ===== */
+        .card {
+            max-width: 560px;
+            width: 100%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px 36px 32px;
+            box-shadow: 0 12px 40px var(--shadow), inset 0 0 0 1px var(--border-light);
+            transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+            position: relative;
+        }
+
+        /* 传统纹样装饰线 — 顶部 */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    var(--accent-gold) 20%,
+                    var(--accent-red) 50%,
+                    var(--accent-gold) 80%,
+                    transparent 100%);
+            border-radius: 0 0 4px 4px;
+            transition: background 0.5s ease;
+        }
+
+        /* 角花装饰 */
+        .card .corner {
+            position: absolute;
+            font-size: 18px;
+            color: var(--accent-gold);
+            opacity: 0.5;
+            user-select: none;
+            transition: color 0.5s ease;
+            font-family: serif;
+        }
+        .card .corner-tl {
+            top: 12px;
+            left: 16px;
+        }
+        .card .corner-tr {
+            top: 12px;
+            right: 16px;
+            transform: scaleX(-1);
+        }
+        .card .corner-bl {
+            bottom: 12px;
+            left: 16px;
+            transform: scaleY(-1);
+        }
+        .card .corner-br {
+            bottom: 12px;
+            right: 16px;
+            transform: scale(-1, -1);
+        }
+
+        /* ===== 标题区 ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .header .title-main {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--accent-red);
+            letter-spacing: 8px;
+            text-shadow: 0 2px 4px rgba(155, 27, 27, 0.15);
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+            position: relative;
+            display: inline-block;
+        }
+        .header .title-main::after {
+            content: '●';
+            font-size: 10px;
+            color: var(--accent-gold);
+            position: absolute;
+            right: -22px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: color 0.5s ease;
+        }
+        .header .title-main::before {
+            content: '●';
+            font-size: 10px;
+            color: var(--accent-gold);
+            position: absolute;
+            left: -22px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: color 0.5s ease;
+        }
+
+        .header .title-sub {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 6px;
+            margin-top: 6px;
+            font-weight: 400;
+            transition: color 0.5s ease;
+        }
+
+        .header .title-sub .seal {
+            display: inline-block;
+            border: 2px solid var(--accent-red);
+            color: var(--accent-red);
+            font-size: 12px;
+            padding: 0 10px;
+            border-radius: 3px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-left: 4px;
+            transform: rotate(-2deg);
+            transition: border-color 0.5s ease, color 0.5s ease;
+            line-height: 1.6;
+        }
+
+        /* 装饰分隔线 */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0 24px;
+            color: var(--text-muted);
+            font-size: 12px;
+            letter-spacing: 4px;
+            transition: color 0.5s ease;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--divider-color), transparent);
+            transition: background 0.5s ease;
+        }
+
+        /* ===== 输入区域 ===== */
+        .input-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-wrap .password-input {
+            width: 100%;
+            padding: 14px 52px 14px 18px;
+            font-size: 17px;
+            font-family: 'Noto Serif SC', '华文楷体', 'KaiTi', serif;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.3s ease;
+            outline: none;
+            letter-spacing: 1px;
+        }
+        .input-wrap .password-input:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 4px rgba(155, 27, 27, 0.12);
+        }
+        .input-wrap .password-input::placeholder {
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-size: 15px;
+        }
+
+        /* 显示/隐藏按钮 */
+        .input-wrap .toggle-vis {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.3s ease, background 0.3s ease;
+            line-height: 1;
+        }
+        .input-wrap .toggle-vis:hover {
+            color: var(--text-primary);
+            background: var(--badge-bg);
+        }
+
+        /* ===== 强度指示器 ===== */
+        .strength-section {
+            margin: 8px 0 18px;
+        }
+
+        .strength-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .strength-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--strength-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: background 0.4s ease;
+            position: relative;
+        }
+
+        .strength-bar .fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 8px;
+            transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1), background 0.5s ease;
+            background: var(--strength-fill);
+        }
+
+        .strength-label {
+            font-size: 15px;
+            font-weight: 700;
+            min-width: 44px;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: color 0.4s ease;
+        }
+        .strength-label.weak {
+            color: var(--weak-color);
+        }
+        .strength-label.medium {
+            color: var(--medium-color);
+        }
+        .strength-label.strong {
+            color: var(--strong-color);
+        }
+        .strength-label.empty {
+            color: var(--text-muted);
+        }
+
+        /* ===== 检测项 ===== */
+        .checks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 18px;
+            margin: 14px 0 10px;
+            padding: 12px 14px;
+            background: var(--badge-bg);
+            border-radius: 8px;
+            transition: background 0.4s ease;
+        }
+
+        .checks .check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: color 0.4s ease;
+            padding: 2px 0;
+        }
+        .checks .check-item .icon {
+            font-size: 14px;
+            width: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+        .checks .check-item .icon.pass {
+            color: var(--check-color);
+        }
+        .checks .check-item .icon.fail {
+            color: var(--cross-color);
+        }
+        .checks .check-item .label {
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== 底部 ===== */
+        .footer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--divider-color);
+            transition: border-color 0.4s ease;
+            gap: 12px;
+        }
+
+        .footer .privacy {
+            font-size: 13px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.4s ease;
+        }
+        .footer .privacy .shield {
+            font-size: 16px;
+        }
+
+        /* ===== 版权 ===== */
+        .copyright {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            padding-top: 14px;
+            margin-top: 6px;
+            border-top: 1px solid var(--divider-color);
+            transition: color 0.4s ease, border-color 0.4s ease;
+            font-family: 'Noto Serif SC', '华文楷体', 'KaiTi', serif;
+            opacity: 0.75;
+        }
+        .copyright .brand {
+            color: var(--accent-red);
+            font-weight: 700;
+            transition: color 0.4s ease;
+        }
+        .copyright .sep {
+            margin: 0 6px;
+            color: var(--accent-gold);
+        }
+
+        /* ===== 明暗切换 ===== */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle .toggle-track {
+            width: 48px;
+            height: 26px;
+            background: var(--toggle-bg);
+            border-radius: 16px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.4s ease;
+            border: none;
+            padding: 0;
+            flex-shrink: 0;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+        .theme-toggle .toggle-track .dot {
+            width: 20px;
+            height: 20px;
+            background: var(--toggle-dot);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.4s ease;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        .theme-toggle .toggle-track.active {
+            background: var(--toggle-active);
+        }
+        .theme-toggle .toggle-track.active .dot {
+            transform: translateX(22px);
+        }
+
+        .theme-toggle .toggle-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+            transition: color 0.4s ease;
+            user-select: none;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 520px) {
+            .card {
+                padding: 28px 18px 24px;
+            }
+            .card::before {
+                left: 16px;
+                right: 16px;
+            }
+            .header .title-main {
+                font-size: 26px;
+                letter-spacing: 4px;
+            }
+            .header .title-main::before,
+            .header .title-main::after {
+                display: none;
+            }
+            .header .title-sub {
+                font-size: 12px;
+                letter-spacing: 3px;
+            }
+            .checks {
+                grid-template-columns: 1fr 1fr;
+                gap: 4px 12px;
+                padding: 10px 12px;
+            }
+            .checks .check-item {
+                font-size: 12px;
+            }
+            .footer {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .footer .privacy {
+                justify-content: center;
+                font-size: 12px;
+            }
+            .theme-toggle {
+                justify-content: center;
+            }
+            .input-wrap .password-input {
+                font-size: 15px;
+                padding: 12px 48px 12px 14px;
+            }
+            .card .corner {
+                display: none;
+            }
+            .copyright {
+                font-size: 11px;
+                letter-spacing: 1px;
+                padding-top: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .checks {
+                grid-template-columns: 1fr;
+            }
+            .header .title-main {
+                font-size: 22px;
+                letter-spacing: 2px;
+            }
+        }
+
+        /* ===== 动画 ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* 密码输入时的小点缀 */
+        .input-wrap .password-input:not(:placeholder-shown) {
+            border-color: var(--accent-gold);
+        }
+        .input-wrap .password-input:not(:placeholder-shown):focus {
+            border-color: var(--accent-red);
+        }
+
+        /* 空状态 */
+        .strength-label.empty {
+            font-weight: 400;
+        }
+
+        /* 小徽标 — 传统风格 */
+        .badge-tradition {
+            display: inline-block;
+            background: var(--accent-red);
+            color: #fcf9f2;
+            font-size: 10px;
+            padding: 0 10px;
+            border-radius: 2px;
+            letter-spacing: 2px;
+            line-height: 1.8;
+            font-weight: 700;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* 选中高亮 */
+        .input-wrap .password-input:focus+.toggle-vis {
+            color: var(--accent-red);
+        }
+
+        /* 过渡优化 */
+        .card,
+        .header .title-main,
+        .header .title-sub,
+        .strength-label,
+        .checks .check-item,
+        .footer .privacy,
+        .theme-toggle .toggle-label,
+        .input-wrap .password-input,
+        .divider,
+        .divider::before,
+        .divider::after,
+        .strength-bar,
+        .strength-bar .fill,
+        .copyright {
+            transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* 遮罩提示 */
+        .privacy-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" role="main" aria-label="密码强度检测">
+        <!-- 角花装饰 -->
+        <span class="corner corner-tl">❦</span>
+        <span class="corner corner-tr">❦</span>
+        <span class="corner corner-bl">❦</span>
+        <span class="corner corner-br">❦</span>
+
+        <!-- 标题 -->
+        <div class="header">
+            <div class="title-main">大明·密码鉴</div>
+            <div class="title-sub">
+                御批 · 强度审验
+                <span class="seal">钦定</span>
+            </div>
+        </div>
+
+        <!-- 分隔 -->
+        <div class="divider">◆ ◇ ◆ ◇ ◆</div>
+
+        <!-- 输入框 -->
+        <div class="input-wrap">
+            <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            placeholder="请输入密码…"
+            autocomplete="new-password"
+            aria-label="密码输入框"
+            />
+            <button
+            class="toggle-vis"
+            id="toggleVisBtn"
+            type="button"
+            aria-label="切换密码可见性"
+            title="显示/隐藏密码"
+            >
+            👁
+        </button>
+    </div>
+
+    <!-- 强度 -->
+    <div class="strength-section">
+        <div class="strength-bar-wrap">
+            <div class="strength-bar" aria-hidden="true">
+                <div class="fill" id="strengthFill" style="width:0%;"></div>
+            </div>
+            <span class="strength-label empty" id="strengthLabel">—</span>
+        </div>
+
+        <!-- 检测项 -->
+        <div class="checks" id="checksContainer">
+            <span class="check-item" data-key="length">
+                <span class="icon fail" id="icon-length">✕</span>
+                <span class="label">长度 ≥ 8</span>
+            </span>
+            <span class="check-item" data-key="lower">
+                <span class="icon fail" id="icon-lower">✕</span>
+                <span class="label">小写字母</span>
+            </span>
+            <span class="check-item" data-key="upper">
+                <span class="icon fail" id="icon-upper">✕</span>
+                <span class="label">大写字母</span>
+            </span>
+            <span class="check-item" data-key="digit">
+                <span class="icon fail" id="icon-digit">✕</span>
+                <span class="label">数字</span>
+            </span>
+            <span class="check-item" data-key="special">
+                <span class="icon fail" id="icon-special">✕</span>
+                <span class="label">特殊字符</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="footer">
+        <div class="privacy">
+            <span class="shield">🛡</span>
+            <span>我们不会抓取您输入的密码</span>
+        </div>
+
+        <div class="theme-toggle">
+            <span class="toggle-label" id="themeLabel">🌙 夜</span>
+            <button class="toggle-track" id="themeToggleBtn" type="button" aria-label="切换明暗主题" role="switch">
+                <span class="dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 版权信息 -->
+    <div class="copyright">
+        <span class="brand">大明·密码鉴</span>
+        <span class="sep">◆</span>
+        <span>© 2013-2026 MingDynasty, Inc.</span>
+        <span class="sep">◇</span>
+        <span>大明密码强弱判断</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ===== DOM 引用 =====
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleVisBtn = document.getElementById('toggleVisBtn');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthLabel = document.getElementById('strengthLabel');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeLabel = document.getElementById('themeLabel');
+
+        // 检测项图标
+        const icons = {
+            length: document.getElementById('icon-length'),
+            lower: document.getElementById('icon-lower'),
+            upper: document.getElementById('icon-upper'),
+            digit: document.getElementById('icon-digit'),
+            special: document.getElementById('icon-special'),
+        };
+
+        // ===== 密码强度检测 =====
+        function checkPasswordStrength(password) {
+            const result = {
+                length: password.length >= 8,
+                lower: /[a-z]/.test(password),
+                upper: /[A-Z]/.test(password),
+                digit: /\d/.test(password),
+                special: /[^a-zA-Z0-9]/.test(password),
+            };
+
+            // 计分 (每个条件20分)
+            const score = Object.values(result).filter(Boolean).length * 20;
+            // 额外长度加成 (超过12字符再加10分)
+            let bonus = 0;
+            if (password.length >= 12) bonus = 10;
+            else if (password.length >= 10) bonus = 5;
+            const total = Math.min(100, score + bonus);
+
+            let level, labelText, colorClass;
+            if (total === 0) {
+                level = 'empty';
+                labelText = '—';
+                colorClass = 'empty';
+            } else if (total < 40) {
+                level = 'weak';
+                labelText = '弱';
+                colorClass = 'weak';
+            } else if (total < 70) {
+                level = 'medium';
+                labelText = '中';
+                colorClass = 'medium';
+            } else {
+                level = 'strong';
+                labelText = '强';
+                colorClass = 'strong';
+            }
+
+            return { result, score: total, level, labelText, colorClass };
+        }
+
+        // ===== 更新界面 =====
+        function updateStrength(password) {
+            const data = checkPasswordStrength(password);
+            const { result, score, level, labelText, colorClass } = data;
+
+            // 进度条
+            strengthFill.style.width = score + '%';
+            // 颜色跟随等级
+            let fillColor = 'var(--strength-fill)';
+            if (level === 'weak') fillColor = 'var(--weak-color)';
+            else if (level === 'medium') fillColor = 'var(--medium-color)';
+            else if (level === 'strong') fillColor = 'var(--strong-color)';
+            else fillColor = 'var(--strength-fill)';
+            strengthFill.style.background = fillColor;
+
+            // 标签
+            strengthLabel.textContent = labelText;
+            strengthLabel.className = 'strength-label ' + colorClass;
+
+            // 检测项图标
+            const checkMap = {
+                length: result.length,
+                lower: result.lower,
+                upper: result.upper,
+                digit: result.digit,
+                special: result.special,
+            };
+
+            for (const [key, passed] of Object.entries(checkMap)) {
+                const icon = icons[key];
+                if (!icon) continue;
+                icon.textContent = passed ? '✓' : '✕';
+                icon.className = 'icon ' + (passed ? 'pass' : 'fail');
+            }
+
+            // 如果密码为空，重置显示
+            if (password.length === 0) {
+                strengthFill.style.width = '0%';
+                strengthFill.style.background = 'var(--strength-fill)';
+                strengthLabel.textContent = '—';
+                strengthLabel.className = 'strength-label empty';
+                for (const icon of Object.values(icons)) {
+                    icon.textContent = '✕';
+                    icon.className = 'icon fail';
+                }
+            }
+        }
+
+        // ===== 事件绑定 =====
+        passwordInput.addEventListener('input', function() {
+            updateStrength(this.value);
+        });
+
+        // 显示/隐藏密码
+        toggleVisBtn.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.textContent = type === 'password' ? '👁' : '👁‍🗨';
+            this.setAttribute('aria-label', type === 'password' ? '显示密码' : '隐藏密码');
+        });
+
+        // ===== 明暗切换 =====
+        let isDark = false;
+
+        function setTheme(dark) {
+            isDark = dark;
+            document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+            themeToggleBtn.classList.toggle('active', dark);
+            themeLabel.textContent = dark ? '☀ 昼' : '🌙 夜';
+            // 保存偏好
+            try {
+                localStorage.setItem('theme-pref', dark ? 'dark' : 'light');
+            } catch (_) { /* ignore */ }
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            setTheme(!isDark);
+        });
+
+        // 读取保存的主题偏好
+        try {
+            const saved = localStorage.getItem('theme-pref');
+            if (saved === 'dark') setTheme(true);
+            else if (saved === 'light') setTheme(false);
+            else {
+                // 系统偏好检测
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setTheme(prefersDark);
+            }
+        } catch (_) {
+            // 默认亮色
+            setTheme(false);
+        }
+
+        // 系统主题变化时同步（仅当用户未手动覆盖）
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', function(e) {
+            // 如果用户没有手动保存过偏好，跟随系统
+            try {
+                const saved = localStorage.getItem('theme-pref');
+                if (saved === null) {
+                    setTheme(e.matches);
+                }
+            } catch (_) {
+                setTheme(e.matches);
+            }
+        });
+
+        // ===== 初始化 =====
+        // 如果输入框有初始值（自动填充），触发检测
+        if (passwordInput.value) {
+            updateStrength(passwordInput.value);
+        } else {
+            // 显示空状态
+            strengthFill.style.width = '0%';
+            strengthLabel.textContent = '—';
+            strengthLabel.className = 'strength-label empty';
+            for (const icon of Object.values(icons)) {
+                icon.textContent = '✕';
+                icon.className = 'icon fail';
+            }
+        }
+
+        console.log('🛡 大明·密码鉴 已启禀');
+        console.log('📜 “我们不会抓取您输入的密码” — 御批');
+        console.log('© 2013-2026 MingDynasty, Inc. 大明密码强弱判断');
+
+        // 小彩蛋：控制台输出传统风格
+        console.log('%c 大明·密码鉴 %c 御批·强度审验 ',
+            'background:#9b1b1b;color:#f5efe6;font-size:16px;font-weight:bold;padding:6px 12px;border-radius:4px 0 0 4px;font-family:serif;',
+            'background:#b8943c;color:#3d2c1b;font-size:16px;font-weight:bold;padding:6px 12px;border-radius:0 4px 4px 0;font-family:serif;'
+        );
+    })();
+</script>
+
+</body>
+</html>
