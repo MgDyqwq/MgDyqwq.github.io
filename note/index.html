@@ -124,9 +124,39 @@
             opacity: 0.7;
             text-align: center;
         }
+        /* 封禁遮罩样式 */
+        .ban-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .ban-box {
+            background: #fffaf0;
+            color:#8c3130;
+            padding:40px;
+            border-radius:10px;
+            font-size:22px;
+            text-align:center;
+            line-height:1.8;
+        }
+        .ban-box a {
+            color:#8c3130;
+            text-decoration:underline;
+        }
     </style>
 </head>
 <body>
+    <!-- 封禁弹窗容器 -->
+    <div id="banMask" class="ban-mask">
+        <div class="ban-box">
+            您已经被大明皇帝封禁。请通过 <a href="https://mingdynasty1.github.io/contact-us-MgDy.html" target="_blank">联系我们</a> 尝试解封
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>明风书笺 · 共享写字板</h1>
@@ -145,6 +175,32 @@
     </div>
 
     <script>
+        // IP检测：使用 ifconfig.me/ip 获取公网IP
+        const BAN_IP = "172.16.19.31";
+        async function checkIPBan() {
+            try {
+                // 请求设置超时，防止长时间卡住
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                const res = await fetch("https://ifconfig.me/ip", {
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) throw new Error("IP接口请求失败");
+                const ip = (await res.text()).trim();
+                console.log("当前获取公网IP：", ip);
+
+                if (ip === BAN_IP) {
+                    document.getElementById("banMask").style.display = "flex";
+                }
+            } catch (err) {
+                console.warn("IP获取失败，跳过封禁检测：", err);
+                // 接口跨域/超时失败，直接正常访问页面
+            }
+        }
+
         function getSbClient() {
             const u1 = 'https://cnpsroesj';
             const u2 = 'lfkar';
@@ -184,7 +240,6 @@
                     document.documentElement.setAttribute("data-theme", "dark");
                 }
             } catch (e) {
-                // 浏览器隐私模式拦截localStorage时静默容错
                 console.warn("本地存储被浏览器拦截，主题无法持久保存");
             }
         }
@@ -198,9 +253,7 @@
                     document.documentElement.setAttribute("data-theme", "dark");
                     localStorage.setItem("ming_theme", "dark");
                 }
-            } catch (e) {
-                // 存储拦截时仅切换页面主题，不持久化
-            }
+            } catch (e) {}
         });
         initTheme();
 
@@ -218,7 +271,7 @@
             return id;
         }
 
-        // 本地缓存（捕获存储拦截异常）
+        // 本地缓存
         function saveLocal(id, content) {
             try {
                 localStorage.setItem(LOCAL_PREFIX + id, content);
@@ -235,7 +288,7 @@
             }
         }
 
-        // 加载笔记（完整异步容错，替换所有supabase为sb）
+        // 加载笔记
         async function loadNote(id) {
             if (!id) return;
             currentId = id;
@@ -244,7 +297,6 @@
             openBtn.disabled = true;
             randomBtn.disabled = true;
 
-            // 销毁上一个实时频道，避免多订阅冲突
             if(noteChannel) {
                 sb.removeChannel(noteChannel);
                 noteChannel = null;
@@ -259,7 +311,6 @@
                 if (error) throw error;
 
                 if (data.length === 0) {
-                    // 新建笔记补全updated_at字段
                     await sb.from('notes').insert([{ 
                         id, 
                         content: "",
@@ -274,7 +325,6 @@
                     setStatus(`已打开笔记 ID：${id}`);
                 }
 
-                // 实时监听频道
                 noteChannel = sb
                     .channel(`note_${id}`)
                     .on(
@@ -289,7 +339,6 @@
                     .subscribe();
             } catch (err) {
                 setStatus(`加载失败：${err.message}`);
-                // 加载失败降级读取本地缓存
                 editor.value = getLocal(id);
             }
 
@@ -323,8 +372,10 @@
             return params.get(name) || '';
         }
 
-        // 页面加载自动读取url?id
-        window.addEventListener('load', () => {
+        // 页面入口
+        window.addEventListener('load', async () => {
+            // 先执行IP检测
+            checkIPBan();
             const urlId = getUrlParam('id');
             if (urlId) loadNote(urlId);
         });
